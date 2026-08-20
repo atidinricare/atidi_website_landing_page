@@ -1,0 +1,203 @@
+/* LocationCard Component Styles */
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: white;
+  border: 1px solid var(--mist);
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.4s var(--ease-out-expo);
+}
+
+.card:hover {
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.12);
+  transform: translateY(-6px);
+}
+
+.card.india:hover {
+  border-color: var(--sage);
+  box-shadow:
+    0 20px 50px rgba(15, 23, 42, 0.12),
+    0 0 0 1px var(--sage),
+    0 0 20px rgba(124, 152, 133, 0.12);
+}
+
+.card.usa:hover {
+  border-color: var(--terracotta);
+  box-shadow:
+    0 20px 50px rgba(15, 23, 42, 0.12),
+    0 0 0 1px var(--terracotta),
+    0 0 20px rgba(212, 113, 94, 0.12);
+}
+
+/* Map Pin Icon */
+.pinIcon {
+  position: absolute;
+  top: 1.25rem;
+  left: 1.25rem;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.4s var(--ease-out-expo);
+}
+
+.card.india .pinIcon {
+  background: rgba(124, 152, 133, 0.1);
+  color: var(--sage);
+}
+
+.card.usa .pinIcon {
+  background: rgba(212, 113, 94, 0.1);
+  color: var(--terracotta);
+}
+
+.card:hover .pinIcon {
+  animation: pinBounce 0.6s ease;
+}
+
+.card.india:hover .pinIcon {
+  background: var(--sage);
+  color: white;
+  box-shadow: 0 4px 12px rgba(124, 152, 133, 0.4);
+}
+
+.card.usa:hover .pinIcon {
+  background: var(--terracotta);
+  color: white;
+  box-shadow: 0 4px 12px rgba(212, 113, 94, 0.4);
+}
+
+@keyframes pinBounce {
+  0%, 100% { transform: translateY(0); }
+  25% { transform: translateY(-8px); }
+  50% { transform: translateY(0); }
+  75% { transform: translateY(-4px); }
+}
+
+.badge {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.card.india .badge {
+  background: rgba(124, 152, 133, 0.15);
+  color: var(--sage-dark);
+}
+
+.card.usa .badge {
+  background: rgba(212, 113, 94, 0.15);
+  color: var(--terracotta-dark);
+}
+
+.content {
+  padding: 2rem;
+  flex: 1;
+}
+
+.city {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 400;
+  color: var(--midnight);
+  margin-bottom: 0.5rem;
+  line-height: 1.2;
+}
+
+.stateCode {
+  font-size: 1.25rem;
+  color: var(--slate);
+}
+
+.tagline {
+  font-size: 0.9rem;
+  color: var(--slate);
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+.stats {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.stat {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--charcoal);
+}
+
+.card.india .stat svg {
+  color: var(--sage);
+}
+
+.card.usa .stat svg {
+  color: var(--terracotta);
+}
+
+.viewBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 1rem;
+  background: var(--cloud);
+  border: none;
+  border-top: 1px solid var(--mist);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--charcoal);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.card.india:hover .viewBtn {
+  background: var(--sage);
+  color: white;
+}
+
+.card.usa:hover .viewBtn {
+  background: var(--terracotta);
+  color: white;
+}
+
+.viewBtn svg {
+  transition: transform 0.3s ease;
+}
+
+.card:hover .viewBtn svg {
+  transform: translateX(4px);
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .content {
+    padding: 1.5rem;
+  }
+
+  .city {
+    font-size: 1.5rem;
+    padding-right: 80px;
+  }
+
+  .badge {
+    top: 1rem;
+    right: 1rem;
+    font-size: 0.8rem;
+  }
+}

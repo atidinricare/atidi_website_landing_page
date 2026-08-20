@@ -1,0 +1,42 @@
+version: '3.8'
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    env_file: .env
+    environment:
+      - NODE_ENV=production
+      # CDN Cache Purge (uncomment the one you use)
+      # Cloudflare
+      # - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN}
+      # - CLOUDFLARE_ZONE_ID=${CLOUDFLARE_ZONE_ID}
+      # AWS CloudFront
+      # - AWS_CLOUDFRONT_DISTRIBUTION_ID=${AWS_CLOUDFRONT_DISTRIBUTION_ID}
+      # - AWS_REGION=${AWS_REGION}
+      # - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      # - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      # Site URL
+      - SITE_URL=${SITE_URL:-https://athidi-payload-node-dev.ktree.org}
+    restart: unless-stopped
+    depends_on:
+      - postgres
+
+  # The postgres service is optional if you are using Neon or another
+  # external PostgreSQL provider. In that case, remove this service and
+  # the depends_on reference above, and set DATABASE_URI in your .env
+  # to point to your external database.
+  postgres:
+    image: postgres:16-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: atidi
+      POSTGRES_PASSWORD: atidi_secret
+      POSTGRES_DB: atidi_cms
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

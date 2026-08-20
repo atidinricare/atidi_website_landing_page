@@ -1,0 +1,923 @@
+/* ============================================
+   TESTIMONIAL VIDEOS SECTION
+   Dark Theme - Luxury Minimalist
+   Signature: Slow-scrolling video marquee
+   Agency-level design
+   ============================================ */
+
+.testimonialSection {
+  background: var(--section-dark);
+  padding: 6rem 0;
+  overflow: hidden;
+  position: relative;
+  min-height: 600px;
+}
+
+/* Background gradient - creates depth */
+.bgGradient {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 50% at 0% 30%, rgba(124, 152, 133, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse 50% 60% at 100% 70%, rgba(196, 107, 72, 0.06) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+/* Noise texture overlay */
+.bgNoise {
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  opacity: 0.04;
+  pointer-events: none;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 6%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-lg);
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+/* ============================================
+   VIDEO GRID - Left Side
+   ============================================ */
+
+.videoGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  height: 520px;
+  position: relative;
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black 5%,
+    black 95%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black 5%,
+    black 95%,
+    transparent 100%
+  );
+}
+
+/* Scroll column wrapper */
+.scrollColumnWrapper {
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Individual scroll column */
+.scrollColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  will-change: transform;
+}
+
+/* Scroll direction: up */
+.scrollColumn.up {
+  animation: scrollUp 60s linear infinite;
+}
+
+/* Scroll direction: down */
+.scrollColumn.down {
+  animation: scrollDown 60s linear infinite;
+}
+
+/* Speed variations for visual interest */
+.scrollColumn.slow {
+  animation-duration: 75s;
+}
+
+.scrollColumn.medium {
+  animation-duration: 60s;
+}
+
+.scrollColumn.fast {
+  animation-duration: 45s;
+}
+
+/* Pause animation on hover/touch for UX */
+.videoGrid:hover .scrollColumn,
+.videoGrid:active .scrollColumn,
+.videoGrid:focus-within .scrollColumn {
+  animation-play-state: paused;
+}
+
+/* JS-controlled pause state - most reliable for touch */
+.videoGrid.paused .scrollColumn {
+  animation-play-state: paused !important;
+}
+
+/* Touch device support */
+@media (hover: none) and (pointer: coarse) {
+  .videoGrid:active .scrollColumn,
+  .videoGrid.paused .scrollColumn {
+    animation-play-state: paused;
+  }
+
+  .videoCard:active .playButton {
+    background: rgba(255, 255, 255, 0.9);
+    color: #333;
+    transform: scale(1.1);
+  }
+}
+
+/* Keyframes for smooth infinite scroll */
+@keyframes scrollUp {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(calc(-33.333% - 6px));
+  }
+}
+
+@keyframes scrollDown {
+  0% {
+    transform: translateY(calc(-33.333% - 6px));
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+/* ============================================
+   VIDEO CARD
+   ============================================ */
+
+.videoCard {
+  position: relative;
+  border-radius: 0;
+  overflow: hidden;
+  background: var(--navy);
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: all 0.4s var(--ease-out-expo);
+}
+
+.videoCard::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--section-border);
+  border-radius: 0;
+  pointer-events: none;
+  z-index: 2;
+  transition: border-color 0.3s ease;
+}
+
+.videoCard:hover::before {
+  border-color: var(--section-border);
+}
+
+.videoThumbnail {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+}
+
+.videoThumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s var(--ease-out-expo);
+  filter: brightness(0.95);
+}
+
+.videoCard:hover .videoThumbnail img {
+  transform: scale(1.05);
+  filter: brightness(1);
+}
+
+.videoOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(15, 23, 42, 0.85) 0%,
+    rgba(15, 23, 42, 0.2) 35%,
+    transparent 60%
+  );
+  transition: opacity 0.4s ease;
+}
+
+/* Play button - circular like reference */
+.playButton {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  width: 37px;
+  height: 37px;
+  border-radius: 50%;
+  background: rgba(80, 80, 80, 0.6);
+  backdrop-filter: blur(4px);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--section-text);
+  cursor: pointer;
+  transition: all 0.3s var(--ease-out-expo);
+}
+
+.playButton svg {
+  width: 18px;
+  height: 18px;
+  margin-left: 2px;
+}
+
+.playButton:hover {
+  background: rgba(255, 255, 255, 0.95);
+  color: #333;
+  transform: scale(1.05);
+}
+
+.videoCard:hover .playButton {
+  background: rgba(255, 255, 255, 0.9);
+  color: #333;
+}
+
+.videoCard:hover .playButton:hover {
+  background: white;
+  color: #222;
+}
+
+/* Active/touch state - turns white */
+.videoCard:active .playButton {
+  background: rgba(255, 255, 255, 0.95);
+  color: #333;
+  transform: scale(1.05);
+}
+
+.playButton:active {
+  transform: scale(0.95);
+}
+
+/* Name badge */
+.videoBadge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  z-index: 1;
+}
+
+.badgeName {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--section-text);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.badgeStatus {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-family: var(--font-body);
+  font-size: 0.6rem;
+  font-weight: 500;
+  color: var(--section-text);
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(8px);
+  padding: 2px 6px;
+  border-radius: 20px;
+  width: fit-content;
+}
+
+.badgeStatus svg {
+  color: var(--sage-light);
+  width: 10px;
+  height: 10px;
+}
+
+/* ============================================
+   CONTENT - Right Side
+   ============================================ */
+
+.content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.sectionLabel {
+  display: inline-block;
+  font-family: var(--font-body);
+  font-size: 0.6rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  color: var(--terracotta);
+  margin-bottom: 1.25rem;
+}
+
+.headline {
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-display);
+  font-weight: 400;
+  margin: 0 0 var(--space-md) 0;
+  gap: 0.1rem;
+}
+
+.headlineLine1,
+.headlineLine2 {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+}
+
+.headlineLine1 {
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  color: var(--section-text);
+}
+
+.headlineLine2 {
+  font-size: clamp(1.5rem, 2.5vw, 2rem);
+  color: var(--section-text-subtle);
+}
+
+.headlineLine2 em {
+  font-style: italic;
+  color: var(--sage-light);
+}
+
+.comma {
+  color: var(--terracotta);
+}
+
+.dot {
+  color: var(--terracotta);
+}
+
+/* Stats Row - centered */
+.statsRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--section-border);
+  width: 100%;
+}
+
+.statItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.statNumber {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 3vw, 2.5rem);
+  font-weight: 400;
+  color: var(--section-text);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.statLabel {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--section-text-subtle);
+  text-transform: lowercase;
+}
+
+.statDivider {
+  width: 1px;
+  height: 45px;
+  background: var(--section-overlay);
+}
+
+/* Quote Block */
+.quoteBlock {
+  position: relative;
+  max-width: 380px;
+}
+
+.quoteIcon {
+  color: var(--terracotta);
+  opacity: 0.3;
+  margin-bottom: 8px;
+  width: 20px;
+  height: 20px;
+}
+
+.quote {
+  font-family: var(--font-display);
+  font-size: clamp(0.95rem, 1.5vw, 1.1rem);
+  font-weight: 400;
+  font-style: italic;
+  color: var(--section-text);
+  line-height: 1.5;
+  margin: 0;
+  min-height: 60px;
+}
+
+.quoteAuthor {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.authorName {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--terracotta-light);
+}
+
+.authorBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-body);
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: var(--slate);
+}
+
+.authorBadge svg {
+  color: var(--sage);
+  width: 10px;
+  height: 10px;
+}
+
+/* Quote indicators */
+.quoteIndicators {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  margin-top: var(--space-sm);
+}
+
+.indicator {
+  width: 20px;
+  height: 2px;
+  background: var(--section-overlay);
+  border: none;
+  border-radius: 1px;
+  cursor: pointer;
+  transition: all 0.4s var(--ease-out-expo);
+  padding: 0;
+}
+
+.indicator:hover {
+  background: var(--section-overlay);
+}
+
+.indicator.active {
+  background: var(--terracotta);
+  width: 32px;
+}
+
+/* ============================================
+   VIDEO MODAL
+   ============================================ */
+
+.videoModal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-md);
+}
+
+.videoModalContent {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  max-height: 90vh;
+  background: var(--midnight);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6);
+  border: 1px solid var(--section-border);
+}
+
+.modalClose {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 10;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--section-border);
+  color: var(--section-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.modalClose:hover {
+  background: rgba(0, 0, 0, 0.7);
+  transform: scale(1.05);
+}
+
+.modalVideo {
+  width: 100%;
+  aspect-ratio: 9 / 16;
+  object-fit: cover;
+  display: block;
+  background: black;
+}
+
+.modalInfo {
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: var(--section-overlay);
+  border-top: 1px solid var(--section-border);
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.modalQuote {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.5;
+  color: var(--section-text-muted);
+  margin: 0;
+}
+
+.modalName {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--section-text);
+}
+
+.modalBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--slate);
+}
+
+.modalBadge svg {
+  color: var(--sage-light);
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+@media (max-width: 1200px) {
+  .container {
+    gap: var(--space-md);
+  }
+}
+
+@media (max-width: 1024px) {
+  .testimonialSection {
+    padding: 5rem 0;
+    min-height: auto;
+  }
+
+  .container {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .videoGrid {
+    height: 380px;
+    max-width: 420px;
+    margin: 0 auto;
+    order: 2;
+    gap: 5px;
+  }
+
+  .scrollColumn {
+    gap: 5px;
+  }
+
+  .content {
+    order: 1;
+  }
+
+  .headlineLine1 {
+    font-size: clamp(1.75rem, 4vw, 2.25rem);
+  }
+
+  .headlineLine2 {
+    font-size: clamp(1.5rem, 3.5vw, 1.85rem);
+  }
+
+  .quoteBlock {
+    max-width: 400px;
+  }
+
+  .quoteAuthor {
+    justify-content: center;
+  }
+
+  .quoteIndicators {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .testimonialSection {
+    padding: 4rem 0;
+  }
+
+  .container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  /* On mobile: stats at top, videos in middle, quote at bottom */
+  .content {
+    display: contents;
+  }
+
+  .sectionLabel {
+    order: 1;
+    margin-top: 1rem;
+    font-size: 0.8rem;
+    margin-bottom: 1rem;
+  }
+
+  .headline {
+    order: 2;
+    margin-bottom: 1rem;
+  }
+
+  .headlineLine1 {
+    font-size: clamp(1.5rem, 6vw, 2rem);
+  }
+
+  .headlineLine2 {
+    font-size: clamp(1.25rem, 5vw, 1.75rem);
+  }
+
+  .statsRow {
+    order: 3;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    gap: 1.5rem;
+  }
+
+  .videoGrid {
+    order: 4;
+    height: 400px;
+    gap: 4px;
+    max-width: 100%;
+    mask-image: none;
+    -webkit-mask-image: none;
+  }
+
+  .quoteBlock {
+    order: 5;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--section-border);
+  }
+
+  .scrollColumn {
+    gap: 4px;
+  }
+
+  .playButton {
+    width: 32px;
+    height: 32px;
+    bottom: 8px;
+    left: 8px;
+    border-radius: 50%;
+    background: rgba(80, 80, 80, 0.6);
+    border: none;
+  }
+
+  .playButton svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  /* Touch/hover highlight on mobile */
+  .videoCard:active .playButton,
+  .videoCard:focus-within .playButton {
+    background: rgba(255, 255, 255, 0.9);
+    color: #333;
+    transform: scale(1.05);
+  }
+
+  .badgeName {
+    font-size: 0.8rem;
+  }
+
+  .badgeStatus {
+    font-size: 0.8rem;
+    padding: 2px 5px;
+  }
+
+  .statNumber {
+    font-size: 1.75rem;
+  }
+
+  .statLabel {
+    font-size: 0.8rem;
+  }
+
+  .statDivider {
+    height: 32px;
+  }
+
+  .quote {
+    font-size: 0.9rem;
+    min-height: 55px;
+  }
+}
+
+@media (max-width: 480px) {
+  .testimonialSection {
+    padding: 3rem 0;
+  }
+
+  .container {
+    padding: 0 5%;
+    gap: 1rem;
+  }
+
+  .sectionLabel {
+    font-size: 0.8rem;
+    margin-bottom: 0.75rem;
+    margin-top: 0.5rem;
+  }
+
+  .headline {
+    margin-bottom: 1rem;
+  }
+
+  .headlineLine1 {
+    font-size: 1.35rem;
+  }
+
+  .headlineLine2 {
+    font-size: 1.15rem;
+  }
+
+  .statsRow {
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--section-border);
+  }
+
+  .videoGrid {
+    grid-template-columns: repeat(3, 1fr);
+    height: 360px;
+    gap: 3px;
+  }
+
+  .scrollColumn {
+    gap: 3px;
+  }
+
+  .quoteBlock {
+    max-width: 100%;
+    margin-top: 1rem;
+    padding-top: 1rem;
+  }
+
+  .videoBadge {
+    top: 4px;
+    left: 4px;
+  }
+
+  .badgeName {
+    font-size: 0.6rem;
+  }
+
+  .badgeStatus {
+    font-size: 0.45rem;
+    padding: 2px 4px;
+    gap: 2px;
+  }
+
+  .badgeStatus svg {
+    width: 8px;
+    height: 8px;
+  }
+
+  .playButton {
+    width: 29px;
+    height: 29px;
+    bottom: 6px;
+    left: 6px;
+    border-radius: 50%;
+    background: rgba(80, 80, 80, 0.6);
+    border: none;
+  }
+
+  .playButton svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .statNumber {
+    font-size: 1.5rem;
+  }
+
+  .statLabel {
+    font-size: 0.6rem;
+  }
+
+  .statDivider {
+    height: 28px;
+  }
+
+  .quote {
+    font-size: 0.8rem;
+    min-height: 45px;
+  }
+
+  .quoteIcon {
+    width: 14px;
+    height: 14px;
+    margin-bottom: 4px;
+  }
+
+  .quoteAuthor {
+    margin-top: 6px;
+  }
+
+  .authorName {
+    font-size: 0.7rem;
+  }
+
+  .authorBadge {
+    font-size: 0.55rem;
+  }
+
+  .quoteIndicators {
+    margin-top: 8px;
+  }
+
+  .indicator {
+    width: 14px;
+    height: 2px;
+  }
+
+  .indicator.active {
+    width: 22px;
+  }
+}
+
+/* ============================================
+   REDUCED MOTION PREFERENCE
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .scrollColumn {
+    animation: none;
+  }
+
+  .videoCard,
+  .playButton,
+  .indicator {
+    transition: none;
+  }
+}

@@ -1,0 +1,211 @@
+/* Clinics Page — Editorial Layout */
+
+.page {
+  background: var(--section-dark);
+  min-height: 100vh;
+  padding-top: 80px;
+}
+
+/* ===== OPENING ===== */
+.opening {
+  padding: 120px 40px 100px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.openingInner {
+  max-width: 860px;
+}
+
+.openingEyebrow {
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--section-text-subtle);
+  margin-bottom: 40px;
+}
+
+.openingHeadline {
+  font-size: clamp(2.5rem, 5.5vw, 4.5rem);
+  font-weight: 300;
+  line-height: 1.12;
+  color: var(--section-text);
+  letter-spacing: -0.035em;
+}
+
+.openingHeadline em {
+  font-style: italic;
+  color: #8ba88b;
+}
+
+/* ===== INTRO ===== */
+.intro {
+  padding: 0 40px 100px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.introGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  border-top: 1px solid var(--section-border);
+  padding-top: 60px;
+}
+
+.introTitle {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 300;
+  color: var(--section-text);
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  position: sticky;
+  top: 120px;
+}
+
+.introRight p {
+  font-size: 1.05rem;
+  color: var(--section-text-muted);
+  line-height: 1.85;
+  margin-bottom: 28px;
+}
+
+.introRight p:last-child {
+  margin-bottom: 0;
+}
+
+/* ===== PILLARS ===== */
+.pillars {
+  padding: 0 40px 100px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.pillarsInner {
+  max-width: 900px;
+  display: flex;
+  flex-direction: column;
+}
+
+.pillarRow {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  gap: 0;
+  padding: 44px 0;
+  border-top: 1px solid var(--section-border);
+}
+
+.pillarRow:last-child {
+  border-bottom: 1px solid var(--section-border);
+}
+
+.pillarNum {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--section-text-subtle);
+  padding-top: 4px;
+  transition: color 0.4s ease;
+}
+
+.pillarRow:hover .pillarNum {
+  color: #8ba88b;
+}
+
+.pillarBody h3 {
+  font-size: 1.25rem;
+  font-weight: 400;
+  color: var(--section-text);
+  margin-bottom: 12px;
+  letter-spacing: -0.01em;
+}
+
+.pillarBody p {
+  font-size: 1rem;
+  color: var(--section-text-subtle);
+  line-height: 1.75;
+  max-width: 620px;
+  margin: 0;
+}
+
+/* ===== STANDARDS ===== */
+.standardsSection {
+  padding: 80px 40px 100px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.standardsInner {
+  max-width: 700px;
+  margin-left: 300px;
+}
+
+.standardsQuote {
+  border-left: 2px solid #8ba88b;
+  padding-left: 40px;
+}
+
+.standardsQuote p {
+  font-size: 1.15rem;
+  font-weight: 300;
+  color: var(--section-text-muted);
+  line-height: 1.75;
+  margin: 0;
+}
+
+.standardsCaption {
+  display: block;
+  margin-top: 28px;
+  margin-left: 42px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--section-text-subtle);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .opening {
+    padding: 80px 24px 60px;
+  }
+
+  .intro {
+    padding: 0 24px 60px;
+  }
+
+  .introGrid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+    padding-top: 40px;
+  }
+
+  .introTitle {
+    position: static;
+  }
+
+  .pillars {
+    padding: 0 24px 60px;
+  }
+
+  .pillarRow {
+    grid-template-columns: 48px 1fr;
+    padding: 28px 0;
+  }
+
+  .standardsSection {
+    padding: 40px 24px 80px;
+  }
+
+  .standardsInner {
+    margin-left: 0;
+  }
+
+  .standardsQuote {
+    padding-left: 24px;
+  }
+
+  .standardsCaption {
+    margin-left: 26px;
+  }
+}

@@ -1,0 +1,555 @@
+/* HowItWorks - Premium Agency Design */
+
+.section {
+  position: relative;
+  min-height: auto;
+  padding: 5rem 0;
+  overflow: hidden;
+}
+
+/* Background - Light gray theme */
+.bg {
+  position: absolute;
+  inset: 0;
+  background: #f8f9fa;
+  border-top: 1px solid var(--mist);
+  border-bottom: 1px solid var(--mist);
+}
+
+/* Container - Asymmetric split */
+.container {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 6%;
+  z-index: 2;
+}
+
+/* ============================================
+   LEFT SIDE - Big Typography
+   ============================================ */
+
+.left {
+  position: sticky;
+  top: 20vh;
+  height: fit-content;
+  padding-right: 3rem;
+}
+
+.icon {
+  width: 60px;
+  height: auto;
+  margin-bottom: 1rem;
+  opacity: 1;
+  filter: contrast(1.2) brightness(0.9);
+}
+
+.label {
+  display: block;
+  font-family: var(--font-body);
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--terracotta);
+  margin-bottom: 0.75rem;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+  color: var(--midnight);
+  margin: 0;
+  padding-bottom: 0.5rem;
+}
+
+.titleWord {
+  display: inline-block;
+}
+
+.dot {
+  color: var(--terracotta);
+}
+
+.line {
+  height: 1px;
+  background: linear-gradient(90deg, var(--terracotta), transparent);
+  margin-top: 1.25rem;
+  max-width: 120px;
+}
+
+/* ============================================
+   RIGHT SIDE - Steps with Timeline
+   ============================================ */
+
+.right {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding-top: 1rem;
+  padding-left: 24px;
+}
+
+/* Vertical Timeline - positioned between circles */
+.timeline {
+  position: absolute;
+  left: 53px;
+  top: 70px;
+  bottom: 70px;
+  width: 2px;
+  background: var(--mist);
+  z-index: 0;
+  border-radius: 1px;
+}
+
+.timelineProgress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(180deg, var(--sage) 0%, var(--terracotta) 100%);
+  transform-origin: top;
+  border-radius: 1px;
+}
+
+/* Step */
+.step {
+  position: relative;
+  display: grid;
+  grid-template-columns: 70px 1fr;
+  gap: 2rem;
+  padding: 2rem 0;
+  border: none;
+  z-index: 1;
+  border-radius: 16px;
+  margin: 0 -1rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.step::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 70px;
+  right: 0;
+  height: 1px;
+  background: var(--mist);
+  transition: opacity 0.3s ease;
+}
+
+.step:last-child::after {
+  display: none;
+}
+
+.stepHovered::after {
+  opacity: 0;
+}
+
+/* Hover glow effect */
+.stepGlow {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(124, 152, 133, 0.06) 0%, rgba(212, 113, 94, 0.03) 100%);
+  border-radius: 16px;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Number with Progress Ring */
+.numberWrapper {
+  position: relative;
+  width: 70px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Outer glow ring */
+.ringGlow {
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(124, 152, 133, 0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.progressRing {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 2px 8px rgba(124, 152, 133, 0.2));
+}
+
+.progressRing circle {
+  transform-origin: center;
+}
+
+.progressRing circle:last-child {
+  transform: rotate(-90deg);
+}
+
+.number {
+  position: relative;
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  color: var(--midnight);
+  z-index: 1;
+}
+
+.step:hover .number {
+  color: var(--sage-dark);
+}
+
+/* Content */
+.content {
+  max-width: 400px;
+  padding-top: 0.5rem;
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.stepTitle {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 400;
+  color: var(--midnight);
+  margin: 0;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  transition: color 0.4s ease;
+}
+
+.step:hover .stepTitle {
+  color: var(--sage-dark);
+}
+
+/* Step Icon */
+.stepIcon {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(124, 152, 133, 0.1) 0%, rgba(212, 113, 94, 0.05) 100%);
+  color: var(--sage);
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+}
+
+.step:hover .stepIcon {
+  background: linear-gradient(135deg, var(--sage) 0%, var(--sage-dark) 100%);
+  color: white;
+  box-shadow: 0 8px 25px rgba(124, 152, 133, 0.35);
+}
+
+.stepDesc {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 400;
+  color: var(--slate);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Animated underline accent */
+.stepUnderline {
+  height: 2px;
+  margin-top: 1rem;
+  background: linear-gradient(90deg, var(--sage), var(--terracotta));
+  transform-origin: left;
+  border-radius: 1px;
+  max-width: 60px;
+}
+
+/* Sparkle effect on icon hover */
+.sparkle {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  color: var(--terracotta);
+  animation: sparkleFloat 1s ease-in-out infinite;
+}
+
+@keyframes sparkleFloat {
+  0%, 100% { transform: translateY(0) rotate(0deg); opacity: 1; }
+  50% { transform: translateY(-3px) rotate(15deg); opacity: 0.8; }
+}
+
+/* Connector between steps - hidden by default, timeline handles this */
+.connector {
+  display: none;
+}
+
+/* ============================================
+   BACKGROUND TEXT
+   ============================================ */
+
+.bgText {
+  position: absolute;
+  bottom: -5%;
+  right: -5%;
+  font-family: var(--font-display);
+  font-size: clamp(8rem, 18vw, 14rem);
+  font-weight: 400;
+  line-height: 0.8;
+  letter-spacing: -0.05em;
+  color: rgba(0, 0, 0, 0.03);
+  pointer-events: none;
+  user-select: none;
+  z-index: 1;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 1024px) {
+  .section {
+    padding: 4rem 0;
+    min-height: auto;
+  }
+
+  .container {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+
+  .left {
+    position: relative;
+    top: auto;
+    padding-right: 0;
+    text-align: center;
+  }
+
+  .icon {
+    width: 50px;
+    margin: 0 auto 0.75rem;
+  }
+
+  .label {
+    margin-bottom: 0.5rem;
+  }
+
+  .title {
+    font-size: clamp(1.75rem, 8vw, 2.5rem);
+  }
+
+  .line {
+    margin: 1rem auto 0;
+  }
+
+  .right {
+    padding-top: 0;
+    padding-left: 16px;
+  }
+
+  .timeline {
+    left: 40px;
+    top: 60px;
+    bottom: 60px;
+  }
+
+  .step {
+    grid-template-columns: 55px 1fr;
+    gap: 1.25rem;
+    padding: 1.5rem 0;
+    margin: 0 -0.5rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+
+  .numberWrapper {
+    width: 55px;
+    height: 55px;
+  }
+
+  .stepTitle {
+    font-size: 1.2rem;
+  }
+
+  .stepDesc {
+    font-size: 0.9rem;
+  }
+
+  .stepIcon {
+    width: 28px;
+    height: 28px;
+  }
+
+  .bgText {
+    font-size: 15vw;
+    bottom: auto;
+    top: 50%;
+    right: -10%;
+    transform: translateY(-50%);
+  }
+}
+
+@media (max-width: 640px) {
+  .section {
+    padding: 3rem 0;
+  }
+
+  .container {
+    padding: 0 5%;
+    gap: 2rem;
+  }
+
+  .icon {
+    width: 40px;
+    margin-bottom: 0.5rem;
+  }
+
+  .title {
+    font-size: clamp(1.5rem, 10vw, 2rem);
+  }
+
+  .line {
+    max-width: 60px;
+    margin-top: 0.75rem;
+  }
+
+  .right {
+    padding-left: 8px;
+  }
+
+  .timeline {
+    left: 30px;
+    top: 50px;
+    bottom: 50px;
+  }
+
+  .step {
+    grid-template-columns: 48px 1fr;
+    gap: 1rem;
+    padding: 1.25rem 0;
+    margin: 0;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .numberWrapper {
+    width: 48px;
+    height: 48px;
+  }
+
+  .number {
+    font-size: 0.9rem;
+  }
+
+  .stepGlow {
+    display: none;
+  }
+
+  .stepUnderline {
+    max-width: 40px;
+    margin-top: 0.75rem;
+  }
+
+  .label {
+    font-size: 0.8rem;
+  }
+
+  .titleRow {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .stepTitle {
+    font-size: 1.1rem;
+  }
+
+  .stepIcon {
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+  }
+
+  .stepDesc {
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+
+  .bgText {
+    display: none;
+  }
+}
+
+@media (max-width: 400px) {
+  .section {
+    padding: 2.5rem 0;
+  }
+
+  .icon {
+    width: 35px;
+  }
+
+  .right {
+    padding-left: 0;
+  }
+
+  .timeline {
+    display: none;
+  }
+
+  .step {
+    grid-template-columns: 40px 1fr;
+    gap: 0.75rem;
+  }
+
+  .numberWrapper {
+    width: 40px;
+    height: 40px;
+  }
+
+  .stepTitle {
+    font-size: 1rem;
+  }
+
+  .stepDesc {
+    font-size: 0.85rem;
+  }
+
+  .step:hover {
+    transform: none;
+  }
+}
+
+/* ============================================
+   REDUCED MOTION
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .step,
+  .stepIcon,
+  .stepTitle {
+    transition: none;
+  }
+
+  .step:hover {
+    transform: none;
+  }
+
+  .step:hover .stepIcon {
+    transform: none;
+  }
+}

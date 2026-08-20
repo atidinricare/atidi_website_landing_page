@@ -1,0 +1,12 @@
+node_modules/
+.next/
+.env
+.env.local
+storage-config.json
+*.tsbuildinfo
+next-env.d.ts
+payload-types.ts
+generated-schema.graphql
+.claude/skills/
+.superpowers/
+test-results/
