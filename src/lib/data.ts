@@ -1,6 +1,6 @@
 import { getPayload } from 'payload'
 import config from '@payload-config'
-import { adaptTreatment, adaptLocation, adaptFAQ } from './adapters'
+import { adaptTreatment, adaptLocation, adaptFAQ, adaptTestimonial } from './adapters'
 
 /**
  * Get all treatments from Payload CMS via Local API.
@@ -344,4 +344,62 @@ export async function getNavigation() {
       link: result.ctaButton?.link || 'https://app.atidinricare.com/',
     },
   }
+}
+
+/**
+ * Get published testimonials from Payload CMS via Local API.
+ * Featured testimonials come first so the home page carousel leads with them.
+ */
+export async function getTestimonials() {
+  const payload = await getPayload({ config })
+
+  const result = await payload.find({
+    collection: 'testimonials',
+    where: { status: { equals: 'published' } },
+    depth: 1,
+    limit: 50,
+    sort: ['-featured', 'patientName'],
+  })
+
+  return result.docs.map(adaptTestimonial)
+}
+
+/**
+ * Get a single published page by slug from Payload CMS via Local API.
+ * Returns null when no published page matches, so the route can 404.
+ */
+export async function getPageBySlug(slug: string) {
+  const payload = await getPayload({ config })
+
+  const result = await payload.find({
+    collection: 'pages',
+    where: {
+      slug: { equals: slug },
+      status: { equals: 'published' },
+    },
+    depth: 2,
+    limit: 1,
+  })
+
+  return result.docs[0] ?? null
+}
+
+/**
+ * Slugs of every published page, for generateStaticParams.
+ * "home" is excluded — the homepage has its own route.
+ */
+export async function getPageSlugs() {
+  const payload = await getPayload({ config })
+
+  const result = await payload.find({
+    collection: 'pages',
+    where: { status: { equals: 'published' } },
+    depth: 0,
+    limit: 200,
+    pagination: false,
+  })
+
+  return result.docs
+    .map((doc: any) => doc.slug)
+    .filter((slug: string) => slug && slug !== 'home')
 }
