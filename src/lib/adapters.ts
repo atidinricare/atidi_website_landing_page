@@ -160,3 +160,29 @@ export function adaptFAQ(doc: any) {
     answer: lines.length > 1 ? lines : lines.length === 1 ? lines : [''],
   }
 }
+
+/**
+ * Transform Payload testimonial doc → frontend shape.
+ *
+ * The quote is stored as Lexical richText; the carousel renders it as plain
+ * paragraphs, so flatten it here the same way adaptFAQ does.
+ */
+export function adaptTestimonial(doc: any) {
+  const quote = lexicalToPlainText(doc.quote)
+    .split(/\n/)
+    .map((line: string) => line.replace(/^[-*]\s*/, '').trim())
+    .filter((line: string) => line.length > 0)
+
+  const treatment = doc.treatment
+
+  return {
+    id: doc.id,
+    patientName: doc.patientName,
+    location: doc.location || '',
+    treatment: typeof treatment === 'object' && treatment ? treatment.name : '',
+    rating: typeof doc.rating === 'number' ? doc.rating : null,
+    quote,
+    videoUrl: doc.videoUrl || '',
+    featured: Boolean(doc.featured),
+  }
+}

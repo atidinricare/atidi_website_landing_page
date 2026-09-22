@@ -499,6 +499,9 @@ async function seed() {
           rating: testimonial.rating,
           quote: toRichText(testimonial.text),
           featured: testimonial.featured,
+          // Without this the collection default ('draft') applies and seeded
+          // testimonials never appear on the home page.
+          status: 'published',
         },
       })
       testimonialCount++

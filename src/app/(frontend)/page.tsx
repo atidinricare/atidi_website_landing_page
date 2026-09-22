@@ -1,14 +1,15 @@
-import { getTreatments, getLocations, getFAQs, getHeroContent, getSiteSettings } from '@/lib/data'
+import { getTreatments, getLocations, getFAQs, getTestimonials, getHeroContent, getSiteSettings } from '@/lib/data'
 import HomePageClient from '@/components/HomePageClient'
 
 // Static generation - revalidates on-demand when content changes in CMS
 export const revalidate = false
 
 export default async function HomePage() {
-  const [treatments, locations, faqs, heroContent, siteSettings] = await Promise.all([
+  const [treatments, locations, faqs, testimonials, heroContent, siteSettings] = await Promise.all([
     getTreatments(),
     getLocations(),
     getFAQs(),
+    getTestimonials(),
     getHeroContent(),
     getSiteSettings(),
   ])
@@ -21,6 +22,7 @@ export default async function HomePage() {
       usLocations={locations.us}
       allLocations={locations.all}
       faqs={faqs}
+      testimonials={testimonials}
       heroContent={heroContent}
       siteSettings={siteSettings}
     />

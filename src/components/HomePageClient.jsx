@@ -15,11 +15,12 @@ import TrustBanner from './TrustBanner'
 import Treatments from './Treatments'
 import HowItWorks from './HowItWorks'
 import Locations from './Locations'
+import Testimonials from './Testimonials'
 import FAQ from './FAQ'
 import JourneyCTA from './JourneyCTA'
 import HeroMosaic from './HeroMosaic'
 
-const HomePageClient = ({ featuredTreatments, allTreatments, indiaLocations, usLocations, allLocations, faqs, heroContent, siteSettings }) => {
+const HomePageClient = ({ featuredTreatments, allTreatments, indiaLocations, usLocations, allLocations, faqs, testimonials, heroContent, siteSettings }) => {
   // Hero content with fallbacks
   const headline = heroContent?.headline || "Premium dental care for NRI's, without the premium price."
   const subheadline = heroContent?.subheadline || "ATIDI NRI CARE connects NRIs to verified top premium dental hospitals in India & USA. We provide world-class treatment in India with seamless follow-up care when you return to the USA. At Atidi dental treatments are 70–90% cheaper than in USA without compromising quality."
@@ -162,6 +163,9 @@ const HomePageClient = ({ featuredTreatments, allTreatments, indiaLocations, usL
         usLocations={usLocations}
         onSelectLocation={handleSelectLocation}
       />
+
+      {/* TESTIMONIALS */}
+      <Testimonials testimonials={testimonials} />
 
       {/* FAQ */}
       <FAQ faqs={faqs} />
