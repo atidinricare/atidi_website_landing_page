@@ -43,11 +43,12 @@ const SmartLink = ({ href, className, children }) => {
 
 const HeroBlock = ({ block }) => {
   const bg = typeof block.backgroundImage === 'object' ? block.backgroundImage?.url : null
+  const light = block.background === 'light'
 
   return (
-    <section className={styles.hero}>
+    <section className={`${styles.hero} ${light ? styles.heroLight : ''}`}>
       {bg && <div className={styles.heroImage} style={{ backgroundImage: `url(${bg})` }} />}
-      <div className={styles.heroOverlay} />
+      <div className={light ? styles.heroOverlayLight : styles.heroOverlay} />
       <div className={styles.container}>
         <div className={styles.heroInner}>
           {block.eyebrow && <span className={styles.eyebrow}>{block.eyebrow}</span>}
@@ -159,12 +160,14 @@ const ContactCardsBlock = ({ block }) => {
   const cards = block.cards || []
   if (cards.length === 0) return null
 
+  const dark = block.theme === 'dark'
+
   return (
-    <section className={styles.section}>
+    <section className={dark ? styles.sectionDark : styles.section}>
       <div className={styles.container}>
         <div className={styles.cards}>
           {cards.map((card, i) => (
-            <div key={i} className={styles.card}>
+            <div key={i} className={`${styles.card} ${dark ? styles.cardDark : ''}`}>
               <span className={styles.cardIcon}><Icon name={card.icon} /></span>
               <h3 className={styles.cardTitle}>{card.title}</h3>
               <div className={styles.prose}>

@@ -64,6 +64,19 @@ export const Pages: CollectionConfig = {
               ],
             },
             { name: 'backgroundImage', type: 'upload', relationTo: 'media' },
+            {
+              name: 'background',
+              type: 'select',
+              label: 'Background',
+              defaultValue: 'dark',
+              options: [
+                { label: 'Dark', value: 'dark' },
+                { label: 'Light', value: 'light' },
+              ],
+              admin: {
+                description: 'Dark matches the Contact Us and About Us heroes. Light sits on the cream page background.',
+              },
+            },
           ],
         },
 
@@ -148,6 +161,19 @@ export const Pages: CollectionConfig = {
           slug: 'contactCards',
           labels: { singular: 'Contact Cards', plural: 'Contact Cards' },
           fields: [
+            {
+              name: 'theme',
+              type: 'select',
+              label: 'Card Style',
+              defaultValue: 'light',
+              options: [
+                { label: 'Light cards on a light section', value: 'light' },
+                { label: 'Dark cards on a dark section', value: 'dark' },
+              ],
+              admin: {
+                description: 'Choose Dark to match the cards on the Contact Us page.',
+              },
+            },
             {
               name: 'cards',
               type: 'array',

@@ -156,7 +156,12 @@
 
 .hero {
   position: relative;
-  padding: clamp(5rem, 12vw, 9rem) 0;
+  /* Matches the hand-built page heroes (ContactUs/AboutUs) so a CMS hero and a
+     coded one sit at the same height instead of towering over it. */
+  min-height: 40vh;
+  display: flex;
+  align-items: center;
+  padding: 80px 0 40px;
   background: var(--hero-bg);
   color: var(--hero-text);
   overflow: hidden;
@@ -177,7 +182,46 @@
   z-index: 1;
 }
 
+/* Light hero — same scale, page-coloured background instead of midnight. */
+.heroLight {
+  background: var(--cream);
+  color: var(--charcoal);
+}
+
+.heroOverlayLight {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, rgba(250, 248, 245, 0.94) 0%, rgba(250, 248, 245, 0.78) 100%);
+  z-index: 1;
+}
+
+.heroLight .heroHeadline {
+  color: var(--midnight);
+}
+
+.heroLight .heroSub {
+  color: var(--slate);
+}
+
+.heroLight .btnSecondary {
+  color: var(--midnight);
+  border-color: var(--mist);
+}
+
+.heroLight .btnSecondary:hover {
+  background: var(--midnight);
+  border-color: var(--midnight);
+  color: #fff;
+}
+
+/* .hero is a flex container, so its one in-flow child must fill the width. */
+.hero > .container {
+  width: 100%;
+}
+
 .heroInner {
+  position: relative;
+  z-index: 2;
   max-width: 760px;
 }
 
@@ -463,6 +507,30 @@
 
 .cardLink:hover {
   color: var(--terracotta-dark);
+}
+
+/* Dark cards — matches the Contact Us page, which uses a translucent white
+   overlay on the dark section rather than a solid fill. */
+.cardDark {
+  background: var(--section-overlay);
+  border-color: var(--section-border);
+  border-radius: 16px;
+}
+
+.cardDark .cardTitle {
+  color: var(--section-text);
+}
+
+.cardDark .prose {
+  color: var(--section-text-muted);
+}
+
+.cardDark .prose a {
+  color: var(--terracotta-light);
+}
+
+.cardDark .cardIcon {
+  color: var(--sage-light);
 }
 
 /* ------------------------------------------------- treatments/locations */
