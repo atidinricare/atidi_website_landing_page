@@ -27,19 +27,24 @@ const RichText = ({ content }) => {
     // Handle element nodes
     const children = node.children?.map((child, i) => renderNode(child, i)) || []
 
+    // On element nodes Lexical stores alignment in `format` as a string
+    // ('center', 'right', 'justify'); on text nodes the same key is a bitmask.
+    const align = typeof node.format === 'string' && node.format ? node.format : null
+    const style = align ? { textAlign: align } : undefined
+
     switch (node.type) {
       case 'paragraph':
-        return <p key={index}>{children}</p>
+        return <p key={index} style={style}>{children}</p>
       case 'heading':
         const HeadingTag = `h${node.tag || 2}`
-        return <HeadingTag key={index}>{children}</HeadingTag>
+        return <HeadingTag key={index} style={style}>{children}</HeadingTag>
       case 'list':
         const ListTag = node.listType === 'number' ? 'ol' : 'ul'
-        return <ListTag key={index}>{children}</ListTag>
+        return <ListTag key={index} style={style}>{children}</ListTag>
       case 'listitem':
-        return <li key={index}>{children}</li>
+        return <li key={index} style={style}>{children}</li>
       case 'quote':
-        return <blockquote key={index}>{children}</blockquote>
+        return <blockquote key={index} style={style}>{children}</blockquote>
       case 'link':
         return (
           <a key={index} href={node.fields?.url || '#'} target={node.fields?.newTab ? '_blank' : undefined}>
