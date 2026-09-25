@@ -2,7 +2,7 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 import { buildConfig } from 'payload'
 import { postgresAdapter } from '@payloadcms/db-postgres'
-import { lexicalEditor, LinkFeature } from '@payloadcms/richtext-lexical'
+import { lexicalEditor, LinkFeature, FixedToolbarFeature } from '@payloadcms/richtext-lexical'
 import { seoPlugin } from '@payloadcms/plugin-seo'
 import { PayloadPluginCloudflarePurge } from 'payload-plugin-cloudflare-purge'
 import { cloudfrontPurgePlugin } from './plugins/cloudfront-purge'
@@ -76,6 +76,10 @@ export default buildConfig({
   editor: lexicalEditor({
     features: ({ defaultFeatures }) => [
       ...defaultFeatures,
+      // The default config ships only the inline toolbar, which appears when
+      // text is selected -- editors reported they could not find the alignment
+      // controls at all. This adds a toolbar that is always visible.
+      FixedToolbarFeature(),
       LinkFeature({
         // Enables internal links to these Payload collections in the rich text editor
         enabledCollections: ['pages', 'posts', 'treatments', 'locations'],

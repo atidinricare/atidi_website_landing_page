@@ -509,6 +509,31 @@
   color: var(--terracotta-dark);
 }
 
+/* Photos pasted into a card's rich text arrive at whatever size they were
+   uploaded — portraits, squares and landscapes side by side, which left the
+   grid ragged with dead space under the short cards. Normalise them to one
+   portrait crop, anchored to the top so faces are never cut off. */
+.card .prose img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  object-position: center top;
+  border-radius: 8px;
+  margin: 0 0 1rem;
+}
+
+/* Cards carrying a photo read as a person, so centre the whole stack rather
+   than leaving a left-aligned role above centred details. */
+.card:has(.prose img) {
+  text-align: center;
+  align-items: center;
+}
+
+.card:has(.prose img) .cardLink {
+  justify-content: center;
+}
+
 /* Dark cards — matches the Contact Us page, which uses a translucent white
    overlay on the dark section rather than a solid fill. */
 .cardDark {
