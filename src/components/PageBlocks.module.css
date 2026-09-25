@@ -530,6 +530,17 @@
   align-items: center;
 }
 
+/* A long role wraps to two lines at some widths and one at others, which
+   pushed that card's photo below its neighbours'. Reserve two lines so every
+   photo in a row starts at the same height regardless of viewport width. */
+.card:has(.prose img) .cardTitle {
+  line-height: 1.25;
+  min-height: 2.5em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .card:has(.prose img) .cardLink {
   justify-content: center;
 }
