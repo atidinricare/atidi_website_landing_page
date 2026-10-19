@@ -15,9 +15,9 @@ async function check() {
   for (const doc of page.docs) {
     console.log('ID:', doc.id, 'STATUS:', doc.status, 'UPDATED:', doc.updatedAt);
     console.log('TITLE:', doc.title);
-    const hero = doc.layout?.find(b => b.blockType === 'hero');
+  const hero = doc.layout?.find((b: any) => b.blockType === 'hero');
     console.log('HERO:', hero);
-    const legal = doc.layout?.find(b => b.blockType === 'legalContent');
+    const legal = doc.layout?.find((b: any) => b.blockType === 'legalContent');
     console.log('LEGAL SECTIONS COUNT:', legal?.sections?.length);
     legal?.sections?.forEach((s, idx) => {
       console.log(`SECTION ${idx + 1}: ${s.title}`);
