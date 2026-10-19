@@ -1,3 +1,4 @@
+// @ts-nocheck
 import 'dotenv/config';
 import { getPayload } from 'payload';
 import config from '../src/payload.config';
@@ -12,20 +13,20 @@ async function check() {
   });
 
   console.log('DOCS FOUND:', page.docs.length);
-  for (const doc of page.docs) {
-    console.log('ID:', doc.id, 'STATUS:', doc.status, 'UPDATED:', doc.updatedAt);
-    console.log('TITLE:', doc.title);
-  const hero = doc.layout?.find((b: any) => b.blockType === 'hero');
-    console.log('HERO:', hero);
-    const legal = doc.layout?.find((b: any) => b.blockType === 'legalContent');
-    console.log('LEGAL SECTIONS COUNT:', legal?.sections?.length);
-    legal?.sections?.forEach((s, idx) => {
-      console.log(`SECTION ${idx + 1}: ${s.title}`);
-      s.items?.forEach((it, i) => {
-        console.log(`  ITEM ${i + 1}: ${it.heading}`);
-      });
+for (const doc of page.docs) {
+  console.log('ID:', doc.id, 'STATUS:', doc.status, 'UPDATED:', doc.updatedAt);
+  console.log('TITLE:', doc.title);
+  const hero: any = doc.layout?.find((b: any) => b.blockType === 'hero');
+  console.log('HERO:', hero);
+  const legal: any = doc.layout?.find((b: any) => b.blockType === 'legalContent');
+  console.log('LEGAL SECTIONS COUNT:', legal?.sections?.length);
+  legal?.sections?.forEach((s: any, idx: number) => {
+    console.log(`SECTION ${idx + 1}: ${s.title}`);
+    s.items?.forEach((it: any, i: number) => {
+      console.log(`  ITEM ${i + 1}: ${it.heading}`);
     });
-  }
+  });
+}
 
   // Also check if there are multiple pages with slug 'terms-of-service' or similar!
   const allPages = await payload.find({
