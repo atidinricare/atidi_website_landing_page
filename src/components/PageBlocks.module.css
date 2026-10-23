@@ -30,14 +30,26 @@
 /* ---------------------------------------------------------- shared type */
 
 .eyebrow {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   font-family: var(--font-body);
-  font-size: 0.6rem;
+  font-size: 0.85rem;
   font-weight: 600;
-  letter-spacing: 0.25em;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--terracotta);
   margin-bottom: 1.25rem;
+}
+
+.hero .eyebrow {
+  font-size: 0.875rem;
+  letter-spacing: 0.15em;
+  padding: 0.35rem 1rem;
+  background: rgba(193, 127, 107, 0.15);
+  border: 1px solid rgba(193, 127, 107, 0.35);
+  border-radius: 9999px;
+  color: #e59d87;
+  margin-bottom: 1.5rem;
 }
 
 .heading {
@@ -156,12 +168,11 @@
 
 .hero {
   position: relative;
-  /* Matches the hand-built page heroes (ContactUs/AboutUs) so a CMS hero and a
-     coded one sit at the same height instead of towering over it. */
-  min-height: 40vh;
+  /* Sits cleanly below the fixed navbar with generous breathing room */
+  min-height: 45vh;
   display: flex;
   align-items: center;
-  padding: 80px 0 40px;
+  padding: clamp(130px, 15vw, 165px) 0 60px;
   background: var(--hero-bg);
   color: var(--hero-text);
   overflow: hidden;
@@ -201,6 +212,12 @@
 
 .heroLight .heroSub {
   color: var(--slate);
+}
+
+.heroLight .eyebrow {
+  background: rgba(193, 127, 107, 0.1);
+  border-color: rgba(193, 127, 107, 0.25);
+  color: var(--terracotta);
 }
 
 .heroLight .btnSecondary {

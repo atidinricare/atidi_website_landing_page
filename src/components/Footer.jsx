@@ -15,6 +15,7 @@ const Footer = async () => {
         { label: 'Our Services', url: '/our-services' },
         { label: 'Our Clinics', url: '/clinics' },
         { label: 'Contact Us', url: '/contact-us' },
+        { label: 'Our Team', url: '/our-team' },
       ],
     },
     {
