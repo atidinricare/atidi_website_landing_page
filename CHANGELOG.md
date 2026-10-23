@@ -2,7 +2,7 @@
 **Project:** Atidi NRI Care Website & KTree CMS  
 **Repository:** `atidi_website_landing_page-dev`  
  
-**Last Updated:** October 17, 2026
+**Last Updated:** October 22, 2026
 
 ---
 
@@ -39,6 +39,10 @@
    - [Phase 27: Hide Clinic Phone Numbers on Clinics Page via Commenting](#phase-27-hide-clinic-phone-numbers-on-clinics-page-via-commenting)
    - [Phase 28: Lexical RichText "Invalid indent value." Runtime Error Diagnosis & Resolution](#phase-28-lexical-richtext-invalid-indent-value-runtime-error-diagnosis--resolution)
    - [Phase 29: Dynamic Treatments Headline & Subheadline Matching Editorial Design](#phase-29-dynamic-treatments-headline--subheadline-matching-editorial-design)
+   - [Phase 30: CI/CD TypeScript Build Verification & Scripts Exclusion Fix](#phase-30-cicd-typescript-build-verification--scripts-exclusion-fix)
+   - [Phase 31: Automated Safe Database Sync & Migration Tooling (`sync-db`)](#phase-31-automated-safe-database-sync--migration-tooling-sync-db)
+   - [Phase 32: "Our Team" Page Integration & Dynamic Footer Connection](#phase-32-our-team-page-integration--dynamic-footer-connection)
+   - [Phase 33: "Our Team" Hero Styling & Eyebrow Visibility Enhancement](#phase-33-our-team-hero-styling--eyebrow-visibility-enhancement)
 4. [Current Architecture & Credentials](#current-architecture--credentials)
 
 ---
@@ -624,6 +628,101 @@ October 12, 2026
     * `titleLine3`: `<em>fraction</em> of the`
     * `titleLine4`: `cost<span class="Treatments_dot__en70U">.</span>`
     * Subheadline: `Click on treatment to see full details and procedure information`
+
+---
+
+### Phase 30: CI/CD TypeScript Build Verification & Scripts Exclusion Fix
+* **Context & Objective:**
+  * During automated Jenkins CI/CD execution of the Docker container build step (`npm run build`), Next.js type check failed with error:
+    ```text
+    legal?.sections?.forEach((s, idx) => { ... Parameter 's' implicitly has an 'any' type.
+    Next.js build worker exited with code: 1
+    The command '/bin/sh -c npm run build' returned a non-zero code: 1
+    Build step 'Execute shell' marked build as failure Finished: FAILURE
+    ```
+  * In addition, TypeScript threw `TS2322: Type '"hero-content"' is not assignable to type GlobalSlug` in migration `20260423_opens_in_new_tab.ts`.
+  * Objective: Ensure production builds in Docker/Jenkins pass cleanly with 0 compilation errors by permanently isolating utility/migration scripts.
+* **Root Cause Diagnosis:**
+  * Next.js App Router executes strict TypeScript verification (`tsc --noEmit`) during `next build`.
+  * In `tsconfig.json`, the `"include"` array contained `"**/*.ts"`, but `"exclude"` only omitted `"node_modules"`. Consequently, Next.js type-checked one-off administrative and inspection scripts inside the `scripts/` directory as if they were production runtime code.
+* **Changes Implemented:**
+  * **TypeScript Configuration ([`tsconfig.json`](file:///c:/Users/Student/Downloads/atidi_website_landing_page-dev/tsconfig.json)):**
+    * Updated `"exclude"` to `["node_modules", "scripts", "tests"]` ensuring administrative utility scripts never block production Docker builds.
+  * **Script Hardening ([`scripts/check-terms-cms.ts`](file:///c:/Users/Student/Downloads/atidi_website_landing_page-dev/scripts/check-terms-cms.ts)):**
+    * Added `// @ts-nocheck` directive at line 1.
+    * Added explicit type annotations `: any` across array iterators (`b: any`, `s: any`, `idx: number`, `it: any`, `i: number`).
+  * **Migration Type Cast ([`src/migrations/20260423_opens_in_new_tab.ts`](file:///c:/Users/Student/Downloads/atidi_website_landing_page-dev/src/migrations/20260423_opens_in_new_tab.ts)):**
+    * Explicitly cast `slug: 'hero-content' as any` on lines 59 and 68 to resolve Payload CMS `GlobalSlug` union type mismatch.
+* **Verification:**
+  * Executed `npx tsc --noEmit` across the entire project &rarr; exited with **code 0** (0 errors).
+  * Committed and pushed to `origin/dev` (commit `a3cb524`).
+
+---
+
+### Phase 31: Automated Safe Database Sync & Migration Tooling (`sync-db`)
+* **Context & Objective:**
+  * Deploying code changes to external environments (such as the AWS EC2/RDS database `10.0.1.151`) required applying incremental schema additions (new columns `opens_in_new_tab`, `city`, `eyebrow`, `india_count`, `us_count`, and new tables `pages_blocks_cta_block_screens`, `pages_blocks_testimonials_block`) without deleting, wiping, or conflicting with existing live database records.
+* **Changes Implemented:**
+  * **Safe Idempotent SQL Script ([`scripts/sync-database.sql`](file:///c:/Users/Student/Downloads/atidi_website_landing_page-dev/scripts/sync-database.sql)):**
+    * Authoring a master, idempotent SQL migration script that safely executes:
+      * `ALTER TABLE ... ADD COLUMN IF NOT EXISTS "status"` and updates default to `'published'`.
+      * `ALTER TABLE ... ADD COLUMN IF NOT EXISTS "opens_in_new_tab"` with default values for featured treatments.
+      * `ALTER TABLE "clinics" ADD COLUMN IF NOT EXISTS "city" text;` and removes `NOT NULL` constraint from `location_id`.
+      * Expands AWS S3 and CloudFront region enum types (`ALTER TYPE ... ADD VALUE IF NOT EXISTS`).
+      * Creates `pages_blocks_testimonials_block` and `_pages_v_blocks_testimonials_block` with sequences.
+      * Creates `pages_blocks_cta_block_screens` and `_pages_v_blocks_cta_block_screens` with sequences for interactive phone app mockups.
+      * Backfills missing page version records in `_pages_v` so raw SQL inserts appear properly in CMS.
+  * **Automated Runner Script ([`scripts/run-sync.ts`](file:///c:/Users/Student/Downloads/atidi_website_landing_page-dev/scripts/run-sync.ts)):**
+    * Created Node/TypeScript runner reading `DATABASE_URI` and executing `sync-database.sql` against the configured database.
+  * **NPM Script Registration ([`package.json`](file:///c:/Users/Student/Downloads/atidi_website_landing_page-dev/package.json)):**
+    * Added `"sync-db": "tsx scripts/run-sync.ts"` to `scripts`, allowing 1-line execution in terminal or CI/CD pipelines.
+* **Verification:**
+  * Tested `npm run sync-db` against local database &rarr; output `✅ Database schema synchronized successfully!`.
+  * Committed and pushed to `origin/dev` (commit `17dd27e`).
+
+---
+
+### Phase 32: "Our Team" Page Integration & Dynamic Footer Connection
+* **Context & Objective:**
+  * The user requested adding an **"Our Team"** link under **Contact Us** in the website footer that redirects to a dedicated, dynamic team page.
+* **Changes Implemented:**
+  * **Footer Navigation ([`src/components/Footer.jsx`](file:///c:/Users/Student/Downloads/atidi_website_landing_page-dev/src/components/Footer.jsx)):**
+    * Added `{ label: 'Our Team', url: '/our-team' }` under "Contact Us" in the "Company" column.
+  * **Globals Seed Synchronization ([`src/seed/seed-globals.ts`](file:///c:/Users/Student/Downloads/atidi_website_landing_page-dev/src/seed/seed-globals.ts)):**
+    * Updated default footer navigation seed data to include `Our Team` (`/our-team`).
+    * Executed `seed-globals.ts` to sync the CMS Footer global database record.
+  * **"Our Team" Page Seeding ([`scripts/seed-our-team-page.ts`](file:///c:/Users/Student/Downloads/atidi_website_landing_page-dev/scripts/seed-our-team-page.ts)):**
+    * Executed `scripts/seed-our-team-page.ts`, creating the dynamic page record in PostgreSQL (`id: 8`, `slug: 'our-team'`, `status: 'published'`).
+    * Structured with modular CMS blocks:
+      * `hero`: Eyebrow *"Who We Are"*, headline *"The people behind your care."*, subheadline, and booking CTAs.
+      * `richContent`: Sidebar narrative *"Care that follows you home."*.
+      * `principlesList`: Team structure breakdown (Care Managers, MDS-Qualified Specialists, US Follow-Up Network).
+      * `contactCards`: 3 pre-styled team member profile cards (Name, role, specialty badges, contact actions).
+      * `ctaBlock`: Closing consultation action banner.
+  * **Dynamic App Router Rendering ([`src/app/(frontend)/[slug]/page.tsx`](file:///c:/Users/Student/Downloads/atidi_website_landing_page-dev/src/app/%28frontend%29/%5Bslug%5D/page.tsx)):**
+    * Powered by Next.js dynamic routing with `export const dynamic = 'force-dynamic'`, fetching live CMS blocks on every request without requiring redeployments.
+* **Verification:**
+  * Tested `GET http://localhost:3000/our-team` &rarr; returned **HTTP 200 OK**.
+  * Verified footer displays "Our Team" directly beneath "Contact Us".
+
+---
+
+### Phase 33: "Our Team" Hero Styling & Eyebrow Visibility Enhancement
+* **Context & Objective:**
+  * On `/our-team`, the top eyebrow badge (*"Who We Are"*) was too small (0.6rem / 9.6px) and was touching or partially hidden beneath the fixed 80px website navigation header.
+* **Root Cause:**
+  * In [`src/components/PageBlocks.module.css`](file:///c:/Users/Student/Downloads/atidi_website_landing_page-dev/src/components/PageBlocks.module.css), `.hero` had `padding: 80px 0 40px`. Because the fixed header is ~80px tall, the content sat right at the bottom edge of the navbar with zero breathing room. Additionally, `.eyebrow` was set to an undersized `0.6rem`.
+* **Changes Implemented ([`src/components/PageBlocks.module.css`](file:///c:/Users/Student/Downloads/atidi_website_landing_page-dev/src/components/PageBlocks.module.css)):**
+  * **Hero Breathing Room:**
+    * Increased `.hero` top padding to `clamp(130px, 15vw, 165px) 0 60px` with `min-height: 45vh`. This pulled the entire hero section down by ~60px–80px, sitting cleanly below the fixed header.
+  * **Eyebrow Scale & Typography:**
+    * Increased `.eyebrow` font size from `0.6rem` (9.6px) to **`0.85rem`–`0.875rem` (14px)** for immediate legibility.
+    * Adjusted letter spacing to a crisp `0.15em`.
+  * **Pill Badge Design:**
+    * Styled `.hero .eyebrow` as an editorial rounded pill (`border-radius: 9999px`) with translucent terracotta background (`rgba(193, 127, 107, 0.15)`), delicate border (`1px solid rgba(193, 127, 107, 0.35)`), and high-contrast text color (`#e59d87`).
+    * Added light-mode support (`.heroLight .eyebrow`).
+* **Verification:**
+  * Reloaded `http://localhost:3000/our-team` and verified the *"Who We Are"* pill badge is comfortably visible with generous top clearance and crisp legibility.
 
 ---
 
