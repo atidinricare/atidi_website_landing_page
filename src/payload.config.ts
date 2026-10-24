@@ -33,28 +33,43 @@ import { TrackingSettings } from './globals/TrackingSettings'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
+function getValidUrl(url?: string): string | undefined {
+  if (!url || typeof url !== 'string') return undefined
+  const trimmed = url.trim()
+  if (!trimmed.startsWith('http://') && !trimmed.startsWith('https://')) return undefined
+  try {
+    const parsed = new URL(trimmed)
+    return parsed.origin
+  } catch {
+    return undefined
+  }
+}
+
+const configuredServerUrl =
+  getValidUrl(process.env.NEXT_PUBLIC_SERVER_URL) ||
+  getValidUrl(process.env.SITE_URL) ||
+  (process.env.NODE_ENV === 'production' ? 'https://athidi-payload-node-dev.ktree.org' : 'http://localhost:3000')
+
 export default buildConfig({
   secret: process.env.PAYLOAD_SECRET || 'atidi-nri-care-default-secret-key',
 
-  serverURL: process.env.NEXT_PUBLIC_SERVER_URL || process.env.SITE_URL || '',
+  serverURL: configuredServerUrl,
 
   cors: [
     'http://localhost:5173',
     'http://localhost:3000',
     'https://localhost:3000',
-    process.env.NEXT_PUBLIC_SERVER_URL || '',
-    process.env.SITE_URL || '',
+    configuredServerUrl,
     'https://athidi-payload-node-dev.ktree.org',
-  ].filter(Boolean),
+  ].filter(Boolean) as string[],
 
   csrf: [
     'http://localhost:5173',
     'http://localhost:3000',
     'https://localhost:3000',
-    process.env.NEXT_PUBLIC_SERVER_URL || '',
-    process.env.SITE_URL || '',
+    configuredServerUrl,
     'https://athidi-payload-node-dev.ktree.org',
-  ].filter(Boolean),
+  ].filter(Boolean) as string[],
 
   admin: {
     user: Users.slug,
@@ -131,6 +146,13 @@ export default buildConfig({
       uploadsCollection: 'media',
       generateTitle: ({ doc }) => `${(doc as any)?.name || (doc as any)?.title || ''} - Atidi NRI Care`,
       generateDescription: ({ doc }) => (doc as any)?.description || (doc as any)?.tagline || '',
+      generateURL: ({ doc, collectionSlug }) => {
+        const slug = (doc as any)?.slug || ''
+        const base = configuredServerUrl || 'https://athidi-payload-node-dev.ktree.org'
+        if (collectionSlug === 'pages') return slug === 'home' ? base : `${base}/${slug}`
+        if (collectionSlug === 'posts') return `${base}/blog/${slug}`
+        return `${base}/${collectionSlug}/${slug}`
+      },
     }),
     // S3 storage - enabled/disabled via Site Settings > Storage (S3) tab
     ...(storageConfig.s3.enabled
@@ -161,13 +183,13 @@ export default buildConfig({
           PayloadPluginCloudflarePurge({
             apiToken: storageConfig.cdn.cloudflare.apiToken,
             zoneId: storageConfig.cdn.cloudflare.zoneId,
-            baseUrl: process.env.SITE_URL || 'https://athidi-payload-node-dev.ktree.org',
+            baseUrl: configuredServerUrl,
             enabled: process.env.NODE_ENV === 'production',
             collections: ['treatments', 'locations', 'clinics', 'posts', 'pages', 'media'],
             globals: ['site-settings', 'navigation', 'footer', 'hero-content', 'app-showcase'],
             events: ['afterChange', 'afterDelete'],
             urlBuilder: ({ collectionSlug, doc }) => {
-              const baseUrl = process.env.SITE_URL || 'https://athidi-payload-node-dev.ktree.org';
+              const baseUrl = configuredServerUrl;
               if (collectionSlug === 'treatments') return [`${baseUrl}/treatments/${doc.slug}`];
               if (collectionSlug === 'locations') return [`${baseUrl}/locations/${doc.slug}`];
               if (collectionSlug === 'posts') return [`${baseUrl}/blog/${doc.slug}`];

@@ -48,6 +48,7 @@
    - [Phase 36: Docker & CI/CD Build-Time Static Generation Resilience](#phase-36-docker--cicd-build-time-static-generation-resilience)
    - [Phase 37: Unconditional "Our Team" Footer Injection Across Database States](#phase-37-unconditional-our-team-footer-injection-across-database-states)
    - [Phase 38: Guaranteed "Process" Navigation Link & Live Admin CORS Configuration](#phase-38-guaranteed-process-navigation-link--live-admin-cors-configuration)
+   - [Phase 39: URL Sanitization & Resolution of Docker HTTP 500 Deployment Failure](#phase-39-url-sanitization--resolution-of-docker-http-500-deployment-failure)
 4. [Current Architecture & Credentials](#current-architecture--credentials)
 
 ---
@@ -854,6 +855,31 @@ October 12, 2026
     * Configured dynamic `serverURL`, `cors`, and `csrf` using `process.env.NEXT_PUBLIC_SERVER_URL`, `process.env.SITE_URL`, and live domain origins.
 * **Verification:**
   * Executed `npm run sync-db` &rarr; executed with **Exit Code 0** (`✅ Database schema synchronized successfully!`).
+
+---
+
+### Phase 39: URL Sanitization & Resolution of Docker HTTP 500 Deployment Failure
+* **Context & Objective:**
+  * During automated Jenkins post-build health check (`Waiting for application to start`), Docker Compose reported `Attempt 2/5 - HTTP status: 500` through `Attempt 5/5 - HTTP status: 500` resulting in `DEPLOYMENT FAILED: Application did not return HTTP 200`.
+* **Root Cause Diagnosis:**
+  * Container logs revealed:
+    ```text
+    [app_1] ERROR: Failed to create URL object from URL: SITE_URL, falling back to http://localhost
+    [app_1] ⨯ TypeError: Invalid URL (code: 'ERR_INVALID_URL', input: 'SITE_URL')
+        at k.hooks.afterRead (@payloadcms/plugin-seo)
+    ```
+  * In the server's environment or Docker Compose configuration, `SITE_URL` was assigned the literal string `"SITE_URL"`.
+  * When Payload CMS and `@payloadcms/plugin-seo` initialized, `serverURL` received `"SITE_URL"`. During the collection `afterRead` hook, `new URL(doc.slug, "SITE_URL")` threw `TypeError: Invalid URL`, crashing every incoming request with **HTTP 500**.
+* **Changes Implemented:**
+  * **URL Sanitization Guard ([`src/payload.config.ts`](file:///c:/Users/Student/Downloads/atidi_website_landing_page-dev/src/payload.config.ts)):**
+    * Created `getValidUrl()` validator ensuring strings must start with `http://` or `https://` and successfully parse via `new URL()`.
+    * If `SITE_URL` contains non-URL literal strings (like `"SITE_URL"`), it is discarded and safely falls back to `https://athidi-payload-node-dev.ktree.org` (in production) or `http://localhost:3000` (in dev).
+  * **SEO Plugin Safe URL Generator ([`src/payload.config.ts`](file:///c:/Users/Student/Downloads/atidi_website_landing_page-dev/src/payload.config.ts)):**
+    * Explicitly defined `generateURL` on `seoPlugin` to construct clean URLs without calling unhandled `new URL()` constructors inside `afterRead`.
+  * **Sitemaps & Robots URL Hardening ([`src/app/robots.ts`](file:///c:/Users/Student/Downloads/atidi_website_landing_page-dev/src/app/robots.ts), [`src/app/sitemap.xml/route.ts`](file:///c:/Users/Student/Downloads/atidi_website_landing_page-dev/src/app/sitemap.xml/route.ts), [`src/app/sitemap/[id]/route.ts`](file:///c:/Users/Student/Downloads/atidi_website_landing_page-dev/src/app/sitemap/%5Bid%5D/route.ts)):**
+    * Added `getValidBaseUrl()` protection across all sitemap and metadata route handlers.
+* **Verification:**
+  * Executed `npm run sync-db` &rarr; executed with **Exit Code 0**.
 
 ---
 
