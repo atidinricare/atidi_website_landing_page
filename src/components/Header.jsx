@@ -15,7 +15,7 @@ const Header = ({ navigation }) => {
   const isHomePage = pathname === '/'
 
   // Navigation data with fallbacks
-  const navItems = navigation?.mainNav || [
+  const defaultNavItems = [
     { label: 'Treatments', link: '#treatments', type: 'custom' },
     { label: 'Locations', link: '#locations', type: 'custom' },
     { label: 'Process', link: '#process', type: 'custom' },
@@ -23,6 +23,32 @@ const Header = ({ navigation }) => {
     { label: 'Clinics', link: '/clinics', type: 'page' },
     { label: 'Sign In', link: 'https://app.atidinricare.com/', type: 'custom' },
   ]
+
+  const baseNavItems =
+    navigation?.mainNav && navigation.mainNav.length > 0
+      ? navigation.mainNav
+      : defaultNavItems
+
+  // Ensure "Process" is always present in the navbar between Locations and FAQ
+  const hasProcess = baseNavItems.some(
+    (item) => item.label?.toLowerCase() === 'process' || item.link?.includes('#process')
+  )
+
+  let navItems = baseNavItems
+  if (!hasProcess) {
+    const locIndex = navItems.findIndex(
+      (item) => item.label?.toLowerCase() === 'locations' || item.link?.includes('#locations')
+    )
+    if (locIndex !== -1) {
+      navItems = [
+        ...navItems.slice(0, locIndex + 1),
+        { label: 'Process', link: '#process', type: 'custom' },
+        ...navItems.slice(locIndex + 1),
+      ]
+    } else {
+      navItems = [{ label: 'Process', link: '#process', type: 'custom' }, ...navItems]
+    }
+  }
   const ctaButton = navigation?.ctaButton || {
     label: 'Book an Appointment',
     link: 'https://app.atidinricare.com/',

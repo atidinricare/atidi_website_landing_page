@@ -7,7 +7,7 @@ const Footer = async () => {
 
   // Fallback data if CMS is empty
   const tagline = footerData.tagline || 'Premium dental care for NRIs. World-class treatment in India with seamless follow-up in the USA.'
-  const columns = footerData.columns.length > 0 ? footerData.columns : [
+  const baseColumns = footerData.columns.length > 0 ? footerData.columns : [
     {
       title: 'Company',
       links: [
@@ -35,6 +35,23 @@ const Footer = async () => {
       ],
     },
   ]
+
+  // Ensure 'Our Team' link is always present under Company even if remote CMS database has not yet synced
+  const columns = baseColumns.map((col) => {
+    if (col.title?.toLowerCase() === 'company') {
+      const hasOurTeam = col.links?.some((l) => l.url === '/our-team' || l.label?.toLowerCase() === 'our team')
+      if (!hasOurTeam) {
+        return {
+          ...col,
+          links: [
+            ...(col.links || []),
+            { label: 'Our Team', url: '/our-team' },
+          ],
+        }
+      }
+    }
+    return col
+  })
   const bottomText = footerData.bottomText || '© 2026 Atidi NRI Care. All rights reserved.'
   const legalLinks = footerData.legalLinks.length > 0 ? footerData.legalLinks : [
     { label: 'Privacy Policy', url: '/privacy-policy' },

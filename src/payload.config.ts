@@ -36,7 +36,25 @@ const dirname = path.dirname(filename)
 export default buildConfig({
   secret: process.env.PAYLOAD_SECRET || 'atidi-nri-care-default-secret-key',
 
-  cors: ['http://localhost:5173', 'http://localhost:3000'],
+  serverURL: process.env.NEXT_PUBLIC_SERVER_URL || process.env.SITE_URL || '',
+
+  cors: [
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'https://localhost:3000',
+    process.env.NEXT_PUBLIC_SERVER_URL || '',
+    process.env.SITE_URL || '',
+    'https://athidi-payload-node-dev.ktree.org',
+  ].filter(Boolean),
+
+  csrf: [
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'https://localhost:3000',
+    process.env.NEXT_PUBLIC_SERVER_URL || '',
+    process.env.SITE_URL || '',
+    'https://athidi-payload-node-dev.ktree.org',
+  ].filter(Boolean),
 
   admin: {
     user: Users.slug,

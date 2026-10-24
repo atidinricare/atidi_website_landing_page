@@ -339,3 +339,27 @@ BEGIN
     END IF;
   END IF;
 END $$;
+
+-- 13. ENSURE "PROCESS" LINK IS PRESENT IN CMS NAVIGATION
+DO $$
+DECLARE
+  v_nav_id integer;
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'navigation_main_nav') THEN
+    SELECT id INTO v_nav_id FROM navigation LIMIT 1;
+    IF v_nav_id IS NOT NULL THEN
+      IF NOT EXISTS (SELECT 1 FROM navigation_main_nav WHERE _parent_id = v_nav_id AND (label ILIKE 'Process' OR link ILIKE '%#process%')) THEN
+        INSERT INTO navigation_main_nav (_order, _parent_id, id, label, link, type)
+        VALUES (
+          3,
+          v_nav_id,
+          '6ad994839ba93f6cc40b56fa',
+          'Process',
+          '/#process',
+          'custom'
+        );
+      END IF;
+    END IF;
+  END IF;
+END $$;
+
