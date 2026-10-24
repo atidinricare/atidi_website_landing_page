@@ -48,28 +48,32 @@ function getValidUrl(url?: string): string | undefined {
 const configuredServerUrl =
   getValidUrl(process.env.NEXT_PUBLIC_SERVER_URL) ||
   getValidUrl(process.env.SITE_URL) ||
-  (process.env.NODE_ENV === 'production' ? 'https://athidi-payload-node-dev.ktree.org' : 'http://localhost:3000')
+  'https://dev1.atidinricare.com'
+
+const allowedOrigins = [
+  'https://dev1.atidinricare.com',
+  'https://atidinricare.com',
+  'https://www.atidinricare.com',
+  'https://athidi-payload-node-dev.ktree.org',
+  'http://18.60.231.46:3000',
+  'http://18.60.231.46',
+  'http://localhost:3000',
+  'https://localhost:3000',
+  'http://localhost:5173',
+  getValidUrl(process.env.NEXT_PUBLIC_SERVER_URL),
+  getValidUrl(process.env.SITE_URL),
+].filter(Boolean) as string[]
 
 export default buildConfig({
   secret: process.env.PAYLOAD_SECRET || 'atidi-nri-care-default-secret-key',
 
-  serverURL: configuredServerUrl,
+  // Leaving serverURL undefined allows Payload to use relative URLs on the client,
+  // working seamlessly across https://dev1.atidinricare.com, staging, and localhost
+  serverURL: getValidUrl(process.env.NEXT_PUBLIC_SERVER_URL) || undefined,
 
-  cors: [
-    'http://localhost:5173',
-    'http://localhost:3000',
-    'https://localhost:3000',
-    configuredServerUrl,
-    'https://athidi-payload-node-dev.ktree.org',
-  ].filter(Boolean) as string[],
+  cors: allowedOrigins,
 
-  csrf: [
-    'http://localhost:5173',
-    'http://localhost:3000',
-    'https://localhost:3000',
-    configuredServerUrl,
-    'https://athidi-payload-node-dev.ktree.org',
-  ].filter(Boolean) as string[],
+  csrf: allowedOrigins,
 
   admin: {
     user: Users.slug,

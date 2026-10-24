@@ -17,7 +17,7 @@ services:
       # - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
       # - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
       # Site URL
-      - SITE_URL=${SITE_URL:-https://athidi-payload-node-dev.ktree.org}
+      - SITE_URL=${SITE_URL:-https://dev1.atidinricare.com}
     restart: unless-stopped
     depends_on:
       - postgres
