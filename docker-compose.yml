@@ -32,8 +32,8 @@ services:
       - "5432:5432"
     environment:
       POSTGRES_USER: atidi
-      POSTGRES_PASSWORD: atidi_secret
-      POSTGRES_DB: atidi_cms
+      POSTGRES_PASSWORD: atidi_dev
+      POSTGRES_DB: atidi_dev
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
