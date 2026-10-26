@@ -152,7 +152,7 @@ export default buildConfig({
       generateDescription: ({ doc }) => (doc as any)?.description || (doc as any)?.tagline || '',
       generateURL: ({ doc, collectionSlug }) => {
         const slug = (doc as any)?.slug || ''
-        const base = configuredServerUrl || 'https://athidi-payload-node-dev.ktree.org'
+        const base = configuredServerUrl || 'https://dev1.atidinricare.com'
         if (collectionSlug === 'pages') return slug === 'home' ? base : `${base}/${slug}`
         if (collectionSlug === 'posts') return `${base}/blog/${slug}`
         return `${base}/${collectionSlug}/${slug}`
