@@ -122,6 +122,31 @@ export default buildConfig({
       uploadsCollection: 'media',
       generateTitle: ({ doc }) => `${(doc as any)?.name || (doc as any)?.title || ''} - Atidi NRI Care`,
       generateDescription: ({ doc }) => (doc as any)?.description || (doc as any)?.tagline || '',
+      // The plugin ships title/description/image only. The routes already read
+      // meta.keywords, but the field never existed, so the keywords tag was
+      // never emitted. Add it here along with a slot for per-page structured
+      // data, so both appear on every SEO-enabled collection.
+      fields: ({ defaultFields }) => [
+        ...defaultFields,
+        {
+          name: 'keywords',
+          type: 'text',
+          label: 'Focus Keywords',
+          admin: {
+            description:
+              'Comma-separated, most important first. Example: dental implants India, NRI dental care, cost of implants',
+          },
+        },
+        {
+          name: 'schema',
+          type: 'json',
+          label: 'Structured Data (JSON-LD)',
+          admin: {
+            description:
+              'Optional schema.org JSON-LD for this page, pasted as a JSON object or an array of objects. Rendered verbatim in a <script type="application/ld+json"> tag. Leave empty to emit nothing.',
+          },
+        },
+      ],
     }),
     // S3 storage - enabled/disabled via Site Settings > Storage (S3) tab
     ...(storageConfig.s3.enabled

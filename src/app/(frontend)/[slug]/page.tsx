@@ -7,6 +7,7 @@ import {
   getFAQs,
 } from '@/lib/data'
 import PageBlocks from '@/components/PageBlocks'
+import JsonLd from '@/components/JsonLd'
 
 export const revalidate = false
 
@@ -71,6 +72,7 @@ export default async function CmsPage({ params }: PageProps) {
 
   return (
     <main>
+      <JsonLd data={(page as any).meta?.schema} />
       <PageBlocks
         layout={layout}
         treatments={treatments?.all ?? []}

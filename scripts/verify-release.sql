@@ -49,6 +49,20 @@ FROM information_schema.columns
 WHERE table_name IN ('pages_blocks_contact_cards','_pages_v_blocks_contact_cards') AND column_name='theme'
 
 UNION ALL
+SELECT 'SEO keywords + schema',
+       CASE WHEN count(*)=12 THEN 'PASS' ELSE 'FAIL - run scripts/add-seo-fields.sql' END,
+       count(*)::text || ' of 12 columns'
+FROM information_schema.columns
+WHERE column_name IN ('meta_keywords','meta_schema','version_meta_keywords','version_meta_schema')
+
+UNION ALL
+SELECT 'Coded-page SEO records',
+       CASE WHEN count(*)=8 THEN 'PASS' ELSE 'FAIL - run scripts/add-coded-page-records.sql' END,
+       count(*)::text || ' of 8 present'
+FROM pages
+WHERE slug IN ('home','about-us','clinics','contact-us','our-services','privacy-policy','terms-of-service','blog')
+
+UNION ALL
 SELECT 'Published CMS pages',
        'INFO',
        coalesce(string_agg(slug, ', ' ORDER BY slug), 'none')

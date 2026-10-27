@@ -23,7 +23,8 @@ export const Pages: CollectionConfig = {
       required: true,
       unique: true,
       admin: {
-        description: 'URL path, e.g. "about-us", "contact-us". Use "home" for the homepage.',
+        description:
+          'The URL path for this page, without a leading slash. Entering "our-team" publishes it at /our-team. Changing it moves the page and breaks any existing links to the old address. The "home" record is a special case: the homepage is built from its own sections, so only its SEO tab is used -- its layout blocks are ignored.',
       },
     },
     {

@@ -9,6 +9,14 @@
 -- Do NOT add --single-transaction: ALTER TYPE ... ADD VALUE cannot run inside a
 -- transaction block on PostgreSQL below 12.
 --
+-- Run it from the REPOSITORY ROOT with -f, not with < redirection:
+--   psql "$DATABASE_URI" -f scripts/deploy-db-updates.sql
+-- The \i below is a relative path, so from any other directory that section is
+-- skipped and psql carries on -- leaving part of the work undone. Add
+-- -v ON_ERROR_STOP=1 to turn that into a hard failure instead of a silent one.
+-- If you cannot run from the repo root, use scripts/fix-blank-pages-tab.sql,
+-- which is self-contained.
+--
 -- Schema only — this changes no page or testimonial content.
 --
 -- Afterwards redeploy (or re-save one record in the admin) so cached pages are
