@@ -1,29 +1,20 @@
 import { getPageBySlug } from '@/lib/data'
 import OurServicesClient from '@/components/OurServicesClient'
+import { buildPageMetadata, getPageSchema } from '@/lib/page-meta'
+import JsonLd from '@/components/JsonLd'
 
 // Force dynamic rendering so edits in CMS immediately reflect on page reload
 export const dynamic = 'force-dynamic'
 
 export async function generateMetadata() {
-  const page = await getPageBySlug('our-services')
-  const meta = (page as any)?.meta || {}
-
-  return {
-    title: meta.title || 'Our Services - Atidi NRI Care',
+ return buildPageMetadata('our-services', {
+    title: 'Our Services - Atidi NRI Care',
     description:
-      meta.description ||
       'Explore Atidi NRI Care services: 24/7 tele support, fast US appointments, vetted Indian clinics, and 360-degree dental care for NRIs.',
     keywords:
-      meta.keywords ||
       'NRI dental services, tele dental support, US dental appointments, dental clinic India, 360 dental care',
-    openGraph: {
-      title: meta.title || 'Our Services - Atidi NRI Care',
-      description:
-        meta.description ||
-        'Explore Atidi NRI Care services: 24/7 tele support, fast US appointments, vetted Indian clinics, and 360-degree dental care for NRIs.',
-    },
-    alternates: { canonical: '/our-services' },
-  }
+    canonical: '/our-services',
+  })
 }
 
 function parseServicesPage(page: any) {
@@ -72,8 +63,14 @@ function parseServicesPage(page: any) {
 }
 
 export default async function OurServicesPage() {
-  const page = await getPageBySlug('our-services')
+ const page = await getPageBySlug('our-services')
   const data = parseServicesPage(page)
-
-  return <OurServicesClient data={data as any} />
+  const schema = await getPageSchema('our-services')
+  return (
+    <>
+      <JsonLd data={schema} />
+      <OurServicesClient data={data as any} />
+    </>
+  )
 }
+

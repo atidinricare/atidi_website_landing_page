@@ -21,6 +21,10 @@ export const Posts: CollectionConfig = {
       type: 'text',
       required: true,
       unique: true,
+      admin: {
+        description:
+          'The URL path for this post, without a leading slash. Entering "dental-implants-guide" publishes it at /blog/dental-implants-guide. Changing it moves the post and breaks any existing links to the old address.',
+      },
     },
     {
       name: 'author',

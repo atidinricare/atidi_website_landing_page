@@ -1,6 +1,9 @@
 import { notFound } from 'next/navigation'
 import { getTreatmentBySlug, getTreatments } from '@/lib/data'
 import TreatmentPageClient from '@/components/TreatmentPageClient'
+import JsonLd from '@/components/JsonLd'
+
+
 export const dynamic = 'force-dynamic'
 
 interface PageProps {
@@ -53,5 +56,10 @@ export default async function TreatmentPage({ params }: PageProps) {
     notFound()
   }
 
-  return <TreatmentPageClient treatment={treatment} />
+  return (
+    <>
+      <JsonLd data={treatment.meta?.schema} />
+      <TreatmentPageClient treatment={treatment} />
+    </>
+  )
 }

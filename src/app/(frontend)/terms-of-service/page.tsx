@@ -1,24 +1,18 @@
 import { getPageBySlug } from '@/lib/data'
 import TermsOfServiceClient from '@/components/TermsOfServiceClient'
+import { buildPageMetadata, getPageSchema } from '@/lib/page-meta'
+import JsonLd from '@/components/JsonLd'
 
 // Force dynamic rendering so edits in CMS immediately reflect on page reload
 export const dynamic = 'force-dynamic'
 
 export async function generateMetadata() {
-  const page = await getPageBySlug('terms-of-service')
-  const meta = (page as any)?.meta || {}
-
-  return {
-    title: meta.title || 'Terms of Service - Atidi NRI Care',
+return buildPageMetadata('terms-of-service', {
+    title: 'Terms of Service - Atidi NRI Care',
     description:
-      meta.description ||
       'Review the Atidi NRI Care terms of service. Understand the conditions governing use of our dental care coordination services.',
-    openGraph: {
-      title: meta.title || 'Terms of Service - Atidi NRI Care',
-      description: meta.description || 'Review the Atidi NRI Care terms of service.',
-    },
-    alternates: { canonical: '/terms-of-service' },
-  }
+    canonical: '/terms-of-service',
+  })
 }
 
 function parseTermsPage(page: any) {
@@ -40,6 +34,13 @@ function parseTermsPage(page: any) {
 export default async function TermsOfServicePage() {
   const page = await getPageBySlug('terms-of-service')
   const data = parseTermsPage(page)
-
-  return <TermsOfServiceClient data={data} />
+  const schema = await getPageSchema('terms-of-service')
+  return (
+    <>
+      <JsonLd data={schema} />
+      <TermsOfServiceClient data={data} />
+    </>
+  )
 }
+
+

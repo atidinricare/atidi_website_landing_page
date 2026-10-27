@@ -3,6 +3,7 @@ import * as migration_20260402_set_status_published from './20260402_set_status_
 import * as migration_20260423_opens_in_new_tab from './20260423_opens_in_new_tab';
 import * as migration_20260827_aws_regions_full_list from './20260827_aws_regions_full_list';
 import * as migration_20260924_block_appearance_options from './20260924_block_appearance_options';
+import * as migration_20261027_seo_keywords_and_schema from './20261027_seo_keywords_and_schema';
 
 export const migrations = [
   {
@@ -29,5 +30,10 @@ export const migrations = [
     up: migration_20260924_block_appearance_options.up,
     down: migration_20260924_block_appearance_options.down,
     name: '20260924_block_appearance_options'
+  },
+  {
+    up: migration_20261027_seo_keywords_and_schema.up,
+    down: migration_20261027_seo_keywords_and_schema.down,
+    name: '20261027_seo_keywords_and_schema'
   },
 ];
