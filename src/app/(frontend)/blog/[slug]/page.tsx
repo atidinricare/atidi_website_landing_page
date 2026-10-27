@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import { getPostBySlug, getPosts } from '@/lib/data'
 import BlogPostClient from '@/components/BlogPostClient'
+import JsonLd from '@/components/JsonLd'
 
 // Static generation - revalidates on-demand when content changes in CMS
 export const revalidate = false
@@ -27,6 +28,7 @@ export async function generateMetadata({ params }: PageProps) {
   return {
     title,
     description,
+    keywords: post.meta?.keywords || undefined,
     openGraph: {
       title,
       description,
@@ -56,5 +58,10 @@ export default async function BlogPostPage({ params }: PageProps) {
     notFound()
   }
 
-  return <BlogPostClient post={post} />
+  return (
+    <>
+      <JsonLd data={(post as any).meta?.schema} />
+      <BlogPostClient post={post} />
+    </>
+  )
 }

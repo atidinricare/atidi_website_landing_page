@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import { getLocationBySlug, getLocations } from '@/lib/data'
 import LocationPageClient from '@/components/LocationPageClient'
+import JsonLd from '@/components/JsonLd'
 
 export const revalidate = false
 
@@ -59,5 +60,10 @@ export default async function LocationPage({ params }: PageProps) {
     notFound()
   }
 
-  return <LocationPageClient location={location} />
+  return (
+    <>
+      <JsonLd data={location.meta?.schema} />
+      <LocationPageClient location={location} />
+    </>
+  )
 }
