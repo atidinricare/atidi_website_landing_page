@@ -2,8 +2,7 @@ import { notFound } from 'next/navigation'
 import { getPostBySlug, getPosts } from '@/lib/data'
 import BlogPostClient from '@/components/BlogPostClient'
 
-// Static generation - revalidates on-demand when content changes in CMS
-export const revalidate = false
+// Force dynamic rendering - fetch post at request time
 export const dynamic = 'force-dynamic'
 
 interface PageProps {

@@ -2,7 +2,6 @@ import { notFound } from 'next/navigation'
 import { getLocationBySlug, getLocations } from '@/lib/data'
 import LocationPageClient from '@/components/LocationPageClient'
 export const dynamic = 'force-dynamic'
-export const revalidate = false
 
 interface PageProps {
   params: Promise<{ slug: string }>

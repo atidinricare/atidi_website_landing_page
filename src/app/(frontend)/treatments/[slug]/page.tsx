@@ -2,7 +2,6 @@ import { notFound } from 'next/navigation'
 import { getTreatmentBySlug, getTreatments } from '@/lib/data'
 import TreatmentPageClient from '@/components/TreatmentPageClient'
 export const dynamic = 'force-dynamic'
-export const revalidate = false
 
 interface PageProps {
   params: Promise<{ slug: string }>

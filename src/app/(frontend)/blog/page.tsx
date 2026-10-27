@@ -1,8 +1,8 @@
 import { getPosts } from '@/lib/data'
 import BlogPageClient from '@/components/BlogPageClient'
 
-// Static generation - revalidates on-demand when content changes in CMS
-export const revalidate = false
+// Force dynamic rendering - fetch posts at request time from CMS
+export const dynamic = 'force-dynamic'
 
 export const metadata = {
   title: 'Blog - Atidi NRI Care',
