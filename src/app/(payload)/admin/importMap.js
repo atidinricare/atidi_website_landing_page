@@ -71,5 +71,6 @@ export const importMap = {
   "@/components/admin/TwoFactor/TwoFactorNavLink#default": default_6fd37ebef20b9029cda7b5c5c89a2c61,
   "@/components/admin/TwoFactor/TwoFactorProvider#default": default_df1519a5a2a9f932e33dea1a695b1f64,
   "@/components/admin/TwoFactor/TwoFactorSetup#default": default_7912dad62a66a6031d59c015041d03cb,
-  "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
+  "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1,
+  "@payloadcms/storage-s3/client#S3ClientUploadHandler": S3ClientUploadHandler_s3
 }
