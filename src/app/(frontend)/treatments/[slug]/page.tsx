@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import { getTreatmentBySlug, getTreatments } from '@/lib/data'
 import TreatmentPageClient from '@/components/TreatmentPageClient'
-
+export const dynamic = 'force-dynamic'
 export const revalidate = false
 
 interface PageProps {
@@ -35,7 +35,7 @@ export async function generateMetadata({ params }: PageProps) {
   }
 }
 
-export async function generateStaticParams() {
+/*export async function generateStaticParams() {
   try {
     const { all } = await getTreatments()
     return all.map((treatment: any) => ({
@@ -44,7 +44,7 @@ export async function generateStaticParams() {
   } catch {
     return []
   }
-}
+} */
 
 export default async function TreatmentPage({ params }: PageProps) {
   const { slug } = await params

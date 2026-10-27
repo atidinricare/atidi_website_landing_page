@@ -8,6 +8,7 @@ import { PayloadPluginCloudflarePurge } from 'payload-plugin-cloudflare-purge'
 import { cloudfrontPurgePlugin } from './plugins/cloudfront-purge'
 import { s3Storage } from '@payloadcms/storage-s3'
 import { readStorageConfig } from './lib/storage-config'
+
 import sharp from 'sharp'
 
 const storageConfig = readStorageConfig()
@@ -23,6 +24,7 @@ import { FAQs } from './collections/FAQs'
 import { Testimonials } from './collections/Testimonials'
 import { Categories } from './collections/Categories'
 import { Pages } from './collections/Pages'
+//import { Activities } from './collections/Activities'
 
 // Globals
 import { SiteSettings } from './globals/SiteSettings'
@@ -127,6 +129,7 @@ export default buildConfig({
     Testimonials,
     Categories,
     Pages,
+    //Activities,
   ],
 
   globals: [

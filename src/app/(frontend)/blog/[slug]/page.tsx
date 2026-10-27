@@ -4,6 +4,7 @@ import BlogPostClient from '@/components/BlogPostClient'
 
 // Static generation - revalidates on-demand when content changes in CMS
 export const revalidate = false
+export const dynamic = 'force-dynamic'
 
 interface PageProps {
   params: Promise<{ slug: string }>
@@ -36,7 +37,7 @@ export async function generateMetadata({ params }: PageProps) {
   }
 }
 
-export async function generateStaticParams() {
+/*export async function generateStaticParams() {
   try {
     const posts = await getPosts()
     return posts.map((post) => ({
@@ -46,7 +47,7 @@ export async function generateStaticParams() {
     // Return empty array if database is not available during build
     return []
   }
-}
+} */
 
 export default async function BlogPostPage({ params }: PageProps) {
   const { slug } = await params

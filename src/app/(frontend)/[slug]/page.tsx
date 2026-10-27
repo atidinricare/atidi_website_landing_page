@@ -43,14 +43,14 @@ export async function generateMetadata({ params }: PageProps) {
   }
 }
 
-export async function generateStaticParams() {
+/* export async function generateStaticParams() {
   try {
     const slugs = await getPageSlugs()
     return slugs.map((slug: string) => ({ slug }))
   } catch {
     return []
   }
-}
+} */
 
 export default async function CmsPage({ params }: PageProps) {
   const { slug } = await params
