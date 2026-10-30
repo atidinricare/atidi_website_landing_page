@@ -26,6 +26,10 @@ export default async function HomePage() {
     (b: any) => b.blockType === 'hero'
   )
 
+  const statsGridBlock: any = (homePage?.layout || []).find(
+    (b: any) => b.blockType === 'statsGrid'
+  )
+
   let heroContent: any = null
   if (heroBlock) {
     let backgroundImage = ''
@@ -35,19 +39,23 @@ export default async function HomePage() {
       backgroundImage = heroBlock.backgroundImage
     }
 
+    const rawStats = Array.isArray(heroBlock.stats) && heroBlock.stats.length > 0
+      ? heroBlock.stats
+      : Array.isArray(statsGridBlock?.stats) && statsGridBlock.stats.length > 0
+        ? statsGridBlock.stats
+        : []
+
     heroContent = {
       headline: heroBlock.headline,
       subheadline: heroBlock.subheadline,
       ctaPrimary: heroBlock.ctaPrimary || { label: 'Book an Appointment', link: 'https://app.atidinricare.com/' },
-      ctaSecondary: heroBlock.ctaSecondary || { label: 'Watch Our Story', link: '#video' },
-      stats: Array.isArray(heroBlock.stats)
-        ? heroBlock.stats.map((stat: any) => ({
-            value: stat.value,
-            label: stat.label,
-            prefix: stat.prefix || '',
-            suffix: stat.suffix || '',
-          }))
-        : [],
+      ctaSecondary: heroBlock.ctaSecondary || { label: 'Watch Our Story', link: '' },
+      stats: rawStats.map((stat: any) => ({
+        value: stat.value,
+        label: stat.label,
+        prefix: stat.prefix || '',
+        suffix: stat.suffix || '',
+      })),
       backgroundImage,
     }
   }

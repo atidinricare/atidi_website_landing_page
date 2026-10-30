@@ -52,7 +52,8 @@ const Footer = async () => {
     }
     return col
   })
-  const bottomText = footerData.bottomText || '© 2026 Atidi NRI Care. All rights reserved.'
+  const rawBottomText = footerData.bottomText || '© 2026 Atidi NRI Care. All rights reserved.'
+  const bottomText = rawBottomText.replace(/[\s·\-|•]*Powered by KTree.*$/i, '').trim() || '© 2026 Atidi NRI Care. All rights reserved.'
   const legalLinks = footerData.legalLinks.length > 0 ? footerData.legalLinks : [
     { label: 'Privacy Policy', url: '/privacy-policy' },
     { label: 'Terms of Service', url: '/terms-of-service' },

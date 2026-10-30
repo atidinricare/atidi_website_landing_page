@@ -38,6 +38,11 @@ export const metadata = {
   icons: {
     icon: '/favicon.ico',
   },
+  verification: {
+    other: {
+      'facebook-domain-verification': ['w6zg41ept3qg84wcibdwj6exfms9fn'],
+    },
+  },
 }
 
 export default async function FrontendLayout({ children }: { children: React.ReactNode }) {

@@ -175,9 +175,17 @@ export function adaptTestimonial(doc: any) {
 
   const treatment = doc.treatment
 
+  let imageUrl = ''
+  if (typeof doc.image === 'object' && doc.image !== null && doc.image.url) {
+    imageUrl = doc.image.url
+  } else if (typeof doc.image === 'string') {
+    imageUrl = doc.image
+  }
+
   return {
     id: doc.id,
     patientName: doc.patientName,
+    image: imageUrl,
     location: doc.location || '',
     treatment: typeof treatment === 'object' && treatment ? treatment.name : '',
     rating: typeof doc.rating === 'number' ? doc.rating : null,

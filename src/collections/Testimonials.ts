@@ -27,6 +27,15 @@ export const Testimonials: CollectionConfig = {
       required: true,
     },
     {
+      name: 'image',
+      type: 'upload',
+      relationTo: 'media',
+      label: 'Patient Photo / Avatar',
+      admin: {
+        description: 'Upload a patient photo or avatar to show next to their testimonial',
+      },
+    },
+    {
       name: 'location',
       type: 'text',
     },

@@ -48,7 +48,7 @@ export async function POST() {
     // Generate new secret and backup codes
     const secret = generateSecret()
     const backupCodes = generateBackupCodes(10)
-    const qrCode = await generateQRCode(user.email, secret, 'KTree CMS')
+    const qrCode = await generateQRCode(user.email, secret, 'Atidi NRI Care')
 
     // Store the secret temporarily (not enabled yet)
     await payload.update({

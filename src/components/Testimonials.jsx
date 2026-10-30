@@ -34,19 +34,16 @@ const Testimonials = ({ testimonials, testimonialsHeader }) => {
     testimonialsHeader?.subheading ||
     'Patients who travelled for treatment, in their own words';
 
+  const formatLineHtml = (text) => {
+    let html = text.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+    html = html.replace(/,/g, `<span class="${styles.comma}">,</span>`);
+    html = html.replace(/\.$/, `<span class="${styles.dot}">.</span>`);
+    return html;
+  };
+
   const renderTitle = () => {
     if (headingText && headingText.trim()) {
       const lines = headingText.split('\n').map((l) => l.trim()).filter(Boolean);
-      if (lines.length === 1) {
-        return (
-          <span
-            className={styles.titleLine1}
-            dangerouslySetInnerHTML={{
-              __html: lines[0].replace(/\*([^*]+)\*/g, '<em>$1</em>'),
-            }}
-          />
-        );
-      }
       return (
         <>
           {lines.map((line, idx) => {
@@ -56,7 +53,7 @@ const Testimonials = ({ testimonials, testimonialsHeader }) => {
                 key={idx}
                 className={cls}
                 dangerouslySetInnerHTML={{
-                  __html: line.replace(/\*([^*]+)\*/g, '<em>$1</em>'),
+                  __html: formatLineHtml(line),
                 }}
               />
             );
@@ -164,11 +161,24 @@ const Testimonials = ({ testimonials, testimonialsHeader }) => {
               </blockquote>
 
               <footer className={styles.attribution}>
-                <div className={styles.who}>
-                  <span className={styles.name}>{active.patientName}</span>
-                  {active.location ? (
-                    <span className={styles.meta}>{active.location}</span>
-                  ) : null}
+                <div className={styles.patientProfile}>
+                  {active.image ? (
+                    <img
+                      src={active.image}
+                      alt={active.patientName}
+                      className={styles.avatar}
+                    />
+                  ) : (
+                    <div className={styles.avatarPlaceholder}>
+                      {active.patientName ? active.patientName.charAt(0).toUpperCase() : 'P'}
+                    </div>
+                  )}
+                  <div className={styles.who}>
+                    <span className={styles.name}>{active.patientName}</span>
+                    {active.location ? (
+                      <span className={styles.meta}>{active.location}</span>
+                    ) : null}
+                  </div>
                 </div>
 
                 <div className={styles.tags}>

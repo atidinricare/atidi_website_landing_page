@@ -41,10 +41,7 @@ const HomePageClient = ({ featuredTreatments, allTreatments, indiaLocations, usL
   const handleSelectTreatment = (treatment) => {
     if (treatment?.opensInNewTab) {
       if (typeof window !== 'undefined') {
-        const w = window.open(`/treatments/${treatment.id}`, '_blank', 'noopener,noreferrer')
-        if (!w || w.closed || typeof w.closed === 'undefined') {
-          window.location.href = `/treatments/${treatment.id}`
-        }
+        window.open(`/treatments/${treatment.id}`, '_blank', 'noopener,noreferrer')
       }
       return
     }
@@ -55,10 +52,7 @@ const HomePageClient = ({ featuredTreatments, allTreatments, indiaLocations, usL
   const handleSelectLocation = (location) => {
     if (location?.opensInNewTab) {
       if (typeof window !== 'undefined') {
-        const w = window.open(`/locations/${location.id}`, '_blank', 'noopener,noreferrer')
-        if (!w || w.closed || typeof w.closed === 'undefined') {
-          window.location.href = `/locations/${location.id}`
-        }
+        window.open(`/locations/${location.id}`, '_blank', 'noopener,noreferrer')
       }
       return
     }

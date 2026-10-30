@@ -474,3 +474,22 @@ export async function getPageSlugs() {
     .map((doc: any) => doc.slug)
     .filter((slug: string) => slug && slug !== 'home')
 }
+
+/**
+ * Fetch all published activities ordered by activityDate descending
+ */
+/*export async function getActivities() {
+  const payload = await getPayload({ config })
+
+  const result = await payload.find({
+    collection: 'activities' as any,
+    where: {
+      status: { equals: 'published' },
+    },
+    sort: '-activityDate',
+    depth: 2,
+    limit: 100,
+  })
+
+  return result.docs || []
+}*/
