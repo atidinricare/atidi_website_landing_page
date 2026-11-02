@@ -11,7 +11,7 @@ async function seedGlobals() {
   console.log('  Atidi NRI Care - Globals Seed Script')
   console.log('============================================\n')
 
-  console.log('[1/6] Initializing Payload CMS...')
+  console.log('[1/7] Initializing Payload CMS...')
   const payload = await getPayload({ config })
   console.log('  --> Payload initialized.\n')
 
@@ -90,12 +90,13 @@ async function seedGlobals() {
               { label: 'Our Services', url: '/our-services' },
               { label: 'Our Clinics', url: '/clinics' },
               { label: 'Contact Us', url: '/contact-us' },
+              { label: 'Our Team', url: '/our-team' },
             ],
           },
           {
             title: 'Resources',
             links: [
-              { label: 'Patient Stories', url: '#' },
+              { label: 'Patient Stories', url: '/#testimonials' },
               { label: 'Blog', url: '/blog' },
               { label: 'FAQ', url: '/#faq' },
             ],
@@ -122,36 +123,6 @@ async function seedGlobals() {
   }
 
   // --------------------------------------------------
-  // Hero Content
-  // --------------------------------------------------
-  console.log('[5/6] Seeding Hero Content...')
-  try {
-    await payload.updateGlobal({
-      slug: 'hero-content',
-      data: {
-        headline: "Premium dental care for NRI's,\n*without* the premium price.",
-        subheadline: 'ATIDI NRI CARE connects NRIs to verified top premium dental hospitals in India & USA. We provide world-class treatment in India with seamless follow-up care when you return to the USA. At Atidi dental treatments are 70\u201390% cheaper than in USA without compromising quality.',
-        ctaPrimary: {
-          label: 'Book an Appointment',
-          link: 'https://app.atidinricare.com/',
-        },
-        ctaSecondary: {
-          label: 'Watch Our Story',
-          link: '#video',
-        },
-        stats: [
-          { value: '24/7', label: 'Free Teleconsultation' },
-          { value: '100%', label: 'Success Rate' },
-          { value: '10', label: 'US States Covered' },
-        ],
-      },
-    })
-    console.log('  --> Hero Content updated.\n')
-  } catch (error: any) {
-    console.error('  --> Error:', error?.message || error, '\n')
-  }
-
-  // --------------------------------------------------
   // Tracking Settings
   // --------------------------------------------------
   console.log('[6/6] Seeding Tracking Settings...')
@@ -171,6 +142,7 @@ async function seedGlobals() {
   } catch (error: any) {
     console.error('  --> Error:', error?.message || error, '\n')
   }
+
 
   console.log('============================================')
   console.log('  GLOBALS SEED COMPLETE')

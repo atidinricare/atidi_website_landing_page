@@ -10,3 +10,5 @@ generated-schema.graphql
 .claude/skills/
 .superpowers/
 test-results/
+.env.example
+

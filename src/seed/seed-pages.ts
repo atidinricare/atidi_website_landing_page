@@ -7,11 +7,14 @@ import { getPayload } from 'payload'
 import config from '../payload.config'
 
 // Helper: convert plain text paragraphs to Lexical rich text format
-function toLexical(paragraphs: string[]) {
+function toLexical(paragraphs: string | string[] | any) {
+  if (!paragraphs) return null
+  if (typeof paragraphs === 'object' && paragraphs.root) return paragraphs
+  const list = Array.isArray(paragraphs) ? paragraphs : String(paragraphs).split('\n').filter(Boolean)
   return {
     root: {
       type: 'root',
-      children: paragraphs.map((text) => ({
+      children: list.map((text) => ({
         type: 'paragraph',
         children: [{ type: 'text', text, format: 0, detail: 0, mode: 'normal', style: '', version: 1 }],
         direction: 'ltr' as const,
@@ -26,6 +29,40 @@ function toLexical(paragraphs: string[]) {
       version: 1,
     },
   }
+}
+
+function sanitizePageLayout(layout: any[]) {
+  if (!Array.isArray(layout)) return []
+  return layout.map((block) => {
+    const b = { ...block }
+    if (b.blockType === 'highlight' && b.text) {
+      b.text = toLexical(b.text)
+    }
+    if (b.blockType === 'principlesList' && Array.isArray(b.items)) {
+      b.items = b.items.map((it: any) => ({
+        ...it,
+        description: toLexical(it.description),
+      }))
+    }
+    if (b.blockType === 'contactCards' && Array.isArray(b.cards)) {
+      b.cards = b.cards.map((c: any) => ({
+        ...c,
+        content: toLexical(c.content),
+      }))
+    }
+    if (b.blockType === 'legalContent' && Array.isArray(b.sections)) {
+      b.sections = b.sections.map((sec: any) => ({
+        ...sec,
+        items: Array.isArray(sec.items)
+          ? sec.items.map((it: any) => ({
+              ...it,
+              content: toLexical(it.content),
+            }))
+          : [],
+      }))
+    }
+    return b
+  })
 }
 
 // ============================================
@@ -43,6 +80,11 @@ const homePage = {
       subheadline: 'ATIDI NRI CARE connects NRIs to verified top premium dental hospitals in India & USA. We provide world-class treatment in India with seamless follow-up care when you return to the USA. At Atidi dental treatments are 70–90% cheaper than in USA without compromising quality.',
       ctaPrimary: { label: 'Book an Appointment', link: 'https://app.atidinricare.com/' },
       ctaSecondary: { label: 'Watch Our Story', link: '#video' },
+      stats: [
+        { value: '24/7', label: 'Free Teleconsultation' },
+        { value: '100%', label: 'Success Rate' },
+        { value: '10', label: 'US States Covered' },
+      ],
     },
     {
       blockType: 'statsGrid',
@@ -54,14 +96,27 @@ const homePage = {
     },
     {
       blockType: 'treatmentsBlock',
-      heading: 'Our Treatments',
-      subheading: 'Comprehensive dental care at a fraction of US costs, with the same quality materials and international standards.',
+      eyebrow: 'Treatments',
+      heading: 'World-class\nprocedures,\n*fraction* of the\ncost.',
+      subheading: 'Click on treatment to see full details and procedure information',
       showFeaturedOnly: true,
     },
     {
       blockType: 'locationsBlock',
-      heading: 'Our Locations',
-      subheading: 'Treatment centers across India and follow-up care across the USA.',
+      eyebrow: 'Our Network',
+      heading: 'Treatment in India,\nfollow-up in *America*.',
+      subheading: 'Our network spans 23 South Indian cities and 10 USA states for seamless care continuity',
+      indiaCount: '23',
+      indiaLabel: 'South Indian Cities',
+      usCount: '10',
+      usLabel: 'USA States',
+    },
+    {
+      blockType: 'testimonialsBlock',
+      eyebrow: 'Testimonials',
+      heading: 'Their words,\ntheir *journey*.',
+      subheading: 'Patients who travelled for treatment, in their own words',
+      showFeaturedOnly: false,
     },
     {
       blockType: 'faqBlock',
@@ -69,10 +124,17 @@ const homePage = {
     },
     {
       blockType: 'ctaBlock',
+      eyebrow: 'Start Your Journey',
       heading: 'Ready to start your dental journey?',
       subheading: 'Book a free teleconsultation with our dental experts and get a personalized treatment plan.',
       button: { label: 'Book an Appointment', link: 'https://app.atidinricare.com/' },
       style: 'premium',
+      screens: [
+        { imageUrl: '/appimage4.jpeg', label: '01', caption: 'Home & Appointments' },
+        { imageUrl: '/appimage3.jpeg', label: '02', caption: 'Clinic Locator' },
+        { imageUrl: '/appimage2.jpeg', label: '03', caption: 'Treatment History' },
+        { imageUrl: '/appimage1.jpeg', label: '04', caption: 'Medical Reports & Bills' },
+      ],
     },
   ],
 }
@@ -243,9 +305,9 @@ const clinicsPage = {
       style: 'centered',
     },
     {
-      blockType: 'locationsBlock',
-      heading: 'Our Locations',
-      subheading: 'Treatment centers across India and follow-up care across the USA.',
+      blockType: 'clinicsBlock',
+      heading: 'Our Partner Clinics',
+      subheading: 'Browse our network of vetted dental hospitals and specialized clinics across India.',
     },
   ],
 }
@@ -613,9 +675,14 @@ async function seedPages() {
         continue
       }
 
+      const pageData = {
+        ...page,
+        layout: sanitizePageLayout((page as any).layout),
+      }
+
       await payload.create({
         collection: 'pages',
-        data: page as any,
+        data: pageData as any,
       })
       pageCount++
       console.log(`  --> Created page: "${page.title}" (/${page.slug})`)

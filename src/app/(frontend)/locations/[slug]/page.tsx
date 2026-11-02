@@ -3,7 +3,8 @@ import { getLocationBySlug, getLocations } from '@/lib/data'
 import LocationPageClient from '@/components/LocationPageClient'
 import JsonLd from '@/components/JsonLd'
 
-export const revalidate = false
+export const dynamic = 'force-dynamic'
+
 
 interface PageProps {
   params: Promise<{ slug: string }>
@@ -41,7 +42,7 @@ export async function generateMetadata({ params }: PageProps) {
   }
 }
 
-export async function generateStaticParams() {
+/* export async function generateStaticParams() {
   try {
     const { all } = await getLocations()
     return all.map((location: any) => ({
@@ -50,7 +51,7 @@ export async function generateStaticParams() {
   } catch {
     return []
   }
-}
+} */
 
 export default async function LocationPage({ params }: PageProps) {
   const { slug } = await params

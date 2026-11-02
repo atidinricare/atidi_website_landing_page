@@ -20,7 +20,7 @@ import FAQ from './FAQ'
 import JourneyCTA from './JourneyCTA'
 import HeroMosaic from './HeroMosaic'
 
-const HomePageClient = ({ featuredTreatments, allTreatments, indiaLocations, usLocations, allLocations, faqs, testimonials, heroContent, siteSettings }) => {
+const HomePageClient = ({ featuredTreatments, allTreatments, indiaLocations, usLocations, allLocations, faqs, testimonials, heroContent, siteSettings, treatmentsHeader, locationsHeader, testimonialsHeader, ctaBlock, trustBanner, howItWorks, faqBlock }) => {
   // Hero content with fallbacks
   const headline = heroContent?.headline || "Premium dental care for NRI's, without the premium price."
   const subheadline = heroContent?.subheadline || "ATIDI NRI CARE connects NRIs to verified top premium dental hospitals in India & USA. We provide world-class treatment in India with seamless follow-up care when you return to the USA. At Atidi dental treatments are 70–90% cheaper than in USA without compromising quality."
@@ -137,7 +137,7 @@ const HomePageClient = ({ featuredTreatments, allTreatments, indiaLocations, usL
         </div>
 
         <div className="hero-right">
-          <HeroMosaic />
+          <HeroMosaic backgroundImage={heroContent?.backgroundImage} />
           <div className="hero-scroll">
             <span>Scroll</span>
             <div className="hero-scroll-line" />
@@ -146,32 +146,40 @@ const HomePageClient = ({ featuredTreatments, allTreatments, indiaLocations, usL
       </section>
 
       {/* TRUST BANNER */}
-      <TrustBanner />
+      <TrustBanner data={trustBanner} />
 
       {/* TREATMENTS */}
       <Treatments
         treatments={featuredTreatments}
+        treatmentsHeader={treatmentsHeader}
         onSelectTreatment={handleSelectTreatment}
       />
 
       {/* HOW IT WORKS */}
-      <HowItWorks assetBaseUrl={siteSettings?.assetBaseUrl} />
+      <HowItWorks data={howItWorks} assetBaseUrl={siteSettings?.assetBaseUrl} />
 
       {/* LOCATIONS */}
       <Locations
         indiaLocations={indiaLocations}
         usLocations={usLocations}
+        locationsHeader={locationsHeader}
         onSelectLocation={handleSelectLocation}
       />
 
       {/* TESTIMONIALS */}
-      <Testimonials testimonials={testimonials} />
+      <Testimonials
+        testimonials={testimonials}
+        testimonialsHeader={testimonialsHeader}
+      />
 
       {/* FAQ */}
-      <FAQ faqs={faqs} />
+      <FAQ faqs={faqs} faqBlock={faqBlock} />
 
-      {/* JOURNEY CTA */}
-      <JourneyCTA assetBaseUrl={siteSettings?.assetBaseUrl} />
+      {/* JOURNEY CTA - Mobile App Showcase */}
+      <JourneyCTA
+        ctaBlock={ctaBlock}
+        assetBaseUrl={siteSettings?.assetBaseUrl}
+      />
 
       {/* SLIDE PANEL - Treatment Detail */}
       <SlidePanel

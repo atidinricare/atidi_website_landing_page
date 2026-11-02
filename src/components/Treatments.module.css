@@ -36,28 +36,28 @@
    ============================================ */
 
 .header {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 4rem;
-  align-items: end;
-  margin-bottom: 4rem;
-  padding-bottom: 3rem;
-  border-bottom: 1px solid var(--section-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 3rem;
+  margin-bottom: 3.5rem;
+  padding-bottom: 1rem;
 }
 
 .headerLeft {
-  max-width: 480px;
+  flex: 1 1 auto;
+  max-width: 750px;
 }
 
 .label {
   display: inline-block;
   font-family: var(--font-body);
-  font-size: 1rem;
+  font-size: 0.875rem;
   font-weight: 600;
   letter-spacing: 0.25em;
   text-transform: uppercase;
   color: var(--terracotta);
-  margin-bottom: 1.25rem;
+  margin-bottom: 1.5rem;
 }
 
 /* Title with split lines */
@@ -69,31 +69,37 @@
 
 .titleLine1,
 .titleLine2,
-.titleLine3 {
+.titleLine3,
+.titleLine4 {
   display: block;
   font-family: var(--font-display);
   font-weight: 400;
-  line-height: 1.05;
-  letter-spacing: -0.03em;
+  line-height: 1.02;
+  letter-spacing: -0.025em;
+  font-size: clamp(2.75rem, 5.2vw, 4.5rem);
+  white-space: nowrap;
 }
 
 .titleLine1 {
-  font-size: clamp(3.5rem, 7vw, 6rem);
-  color: var(--section-text);
+  color: #FFFFFF;
 }
 
 .titleLine2 {
-  font-size: clamp(3.5rem, 7vw, 6rem);
-  color: var(--section-text);
+  color: #FFFFFF;
 }
 
 .titleLine3 {
-  font-size: clamp(2.75rem, 5.5vw, 4.5rem);
-  color: var(--section-text-subtle);
+  color: #748394;
   margin-top: 0.15rem;
 }
 
-.titleLine3 em {
+.titleLine4 {
+  color: #748394;
+  margin-top: 0.15rem;
+}
+
+.titleLine3 em,
+.titleLine4 em {
   font-style: italic;
   color: var(--sage-light);
 }
@@ -108,21 +114,21 @@
 
 /* Header Right */
 .headerRight {
+  flex: 0 0 auto;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 1.5rem;
-  padding-bottom: 0.5rem;
+  padding-bottom: 0.75rem;
+  max-width: 340px;
 }
 
 .subtitle {
   font-family: var(--font-body);
   font-size: 0.95rem;
   font-weight: 400;
-  line-height: 1.6;
-  color: var(--section-text-muted);
+  line-height: 1.55;
+  color: #7E8C9E;
   margin: 0;
-  max-width: 320px;
 }
 
 .viewAllLink {
@@ -417,16 +423,14 @@
 
 @media (max-width: 1200px) {
   .header {
-    gap: 3rem;
+    gap: 2.5rem;
   }
 
   .titleLine1,
-  .titleLine2 {
-    font-size: clamp(2rem, 4vw, 3rem);
-  }
-
-  .titleLine3 {
-    font-size: clamp(1.5rem, 3vw, 2rem);
+  .titleLine2,
+  .titleLine3,
+  .titleLine4 {
+    font-size: clamp(2.25rem, 4.2vw, 3.5rem);
   }
 
   .grid {
@@ -440,14 +444,22 @@
   }
 
   .header {
-    grid-template-columns: 1fr;
+    flex-direction: column;
+    align-items: flex-start;
     gap: 2rem;
     margin-bottom: 3rem;
-    padding-bottom: 2.5rem;
+    padding-bottom: 2rem;
   }
 
   .headerLeft {
     max-width: 100%;
+  }
+
+  .titleLine1,
+  .titleLine2,
+  .titleLine3,
+  .titleLine4 {
+    white-space: normal;
   }
 
   .headerRight {

@@ -11,7 +11,7 @@ import styles from './Testimonials.module.css';
  * Renders nothing at all when there is nothing published, so the home page
  * is unaffected until the first testimonial goes live.
  */
-const Testimonials = ({ testimonials }) => {
+const Testimonials = ({ testimonials, testimonialsHeader }) => {
   const [index, setIndex] = useState(0);
   const [direction, setDirection] = useState(1);
 
@@ -26,6 +26,52 @@ const Testimonials = ({ testimonials }) => {
   const go = (step) => {
     setDirection(step);
     setIndex((prev) => (prev + step + total) % total);
+  };
+
+  const labelText = testimonialsHeader?.eyebrow || 'Testimonials';
+  const headingText = testimonialsHeader?.heading;
+  const subtitleText =
+    testimonialsHeader?.subheading ||
+    'Patients who travelled for treatment, in their own words';
+
+  const formatLineHtml = (text) => {
+    let html = text.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+    html = html.replace(/,/g, `<span class="${styles.comma}">,</span>`);
+    html = html.replace(/\.$/, `<span class="${styles.dot}">.</span>`);
+    return html;
+  };
+
+  const renderTitle = () => {
+    if (headingText && headingText.trim()) {
+      const lines = headingText.split('\n').map((l) => l.trim()).filter(Boolean);
+      return (
+        <>
+          {lines.map((line, idx) => {
+            const cls = idx === 0 ? styles.titleLine1 : styles.titleLine2;
+            return (
+              <span
+                key={idx}
+                className={cls}
+                dangerouslySetInnerHTML={{
+                  __html: formatLineHtml(line),
+                }}
+              />
+            );
+          })}
+        </>
+      );
+    }
+
+    return (
+      <>
+        <span className={styles.titleLine1}>
+          Their words<span className={styles.comma}>,</span>
+        </span>
+        <span className={styles.titleLine2}>
+          <em>their journey</em><span className={styles.dot}>.</span>
+        </span>
+      </>
+    );
   };
 
   return (
@@ -44,7 +90,7 @@ const Testimonials = ({ testimonials }) => {
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
             >
-              Testimonials
+              {labelText}
             </motion.span>
             <motion.h2
               className={styles.title}
@@ -53,8 +99,7 @@ const Testimonials = ({ testimonials }) => {
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.1 }}
             >
-              <span className={styles.titleLine1}>Their words<span className={styles.comma}>,</span></span>
-              <span className={styles.titleLine2}><em>their journey</em><span className={styles.dot}>.</span></span>
+              {renderTitle()}
             </motion.h2>
           </div>
 
@@ -66,7 +111,7 @@ const Testimonials = ({ testimonials }) => {
             transition={{ duration: 0.6, delay: 0.2 }}
           >
             <p className={styles.subtitle}>
-              Patients who travelled for treatment, in their own words
+              {subtitleText}
             </p>
             <div className={styles.counter}>
               <span className={styles.counterCurrent}>{pad(index + 1)}</span>
@@ -116,11 +161,24 @@ const Testimonials = ({ testimonials }) => {
               </blockquote>
 
               <footer className={styles.attribution}>
-                <div className={styles.who}>
-                  <span className={styles.name}>{active.patientName}</span>
-                  {active.location ? (
-                    <span className={styles.meta}>{active.location}</span>
-                  ) : null}
+                <div className={styles.patientProfile}>
+                  {active.image ? (
+                    <img
+                      src={active.image}
+                      alt={active.patientName}
+                      className={styles.avatar}
+                    />
+                  ) : (
+                    <div className={styles.avatarPlaceholder}>
+                      {active.patientName ? active.patientName.charAt(0).toUpperCase() : 'P'}
+                    </div>
+                  )}
+                  <div className={styles.who}>
+                    <span className={styles.name}>{active.patientName}</span>
+                    {active.location ? (
+                      <span className={styles.meta}>{active.location}</span>
+                    ) : null}
+                  </div>
                 </div>
 
                 <div className={styles.tags}>

@@ -3,7 +3,8 @@ import { getTreatmentBySlug, getTreatments } from '@/lib/data'
 import TreatmentPageClient from '@/components/TreatmentPageClient'
 import JsonLd from '@/components/JsonLd'
 
-export const revalidate = false
+
+export const dynamic = 'force-dynamic'
 
 interface PageProps {
   params: Promise<{ slug: string }>
@@ -36,7 +37,7 @@ export async function generateMetadata({ params }: PageProps) {
   }
 }
 
-export async function generateStaticParams() {
+/*export async function generateStaticParams() {
   try {
     const { all } = await getTreatments()
     return all.map((treatment: any) => ({
@@ -45,7 +46,7 @@ export async function generateStaticParams() {
   } catch {
     return []
   }
-}
+} */
 
 export default async function TreatmentPage({ params }: PageProps) {
   const { slug } = await params

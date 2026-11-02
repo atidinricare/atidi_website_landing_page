@@ -3,8 +3,8 @@ import { buildPageMetadata, getPageSchema } from '@/lib/page-meta'
 import JsonLd from '@/components/JsonLd'
 import BlogPageClient from '@/components/BlogPageClient'
 
-// Static generation - revalidates on-demand when content changes in CMS
-export const revalidate = false
+// Force dynamic rendering - fetch posts at request time from CMS
+export const dynamic = 'force-dynamic'
 
 export async function generateMetadata() {
   return buildPageMetadata('blog', {

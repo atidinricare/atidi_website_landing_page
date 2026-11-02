@@ -52,9 +52,50 @@ export const Treatments: CollectionConfig = {
       name: 'tagline',
       type: 'text',
     },
-    {
+       {
       name: 'description',
       type: 'richText',
+      hooks: {
+        afterRead: [
+          ({ value }) => {
+            if (!value) return value
+            if (typeof value === 'object' && value.root) return value
+
+            let text = typeof value === 'string' ? value : String(value)
+            try {
+              const parsed = JSON.parse(text)
+              if (parsed && typeof parsed === 'object' && parsed.root) return parsed
+              if (typeof parsed === 'string') text = parsed
+            } catch {}
+
+            return {
+              root: {
+                type: 'root',
+                format: '',
+                indent: 0,
+                version: 1,
+                direction: 'ltr',
+                children: [
+                  {
+                    type: 'paragraph',
+                    format: '',
+                    indent: 0,
+                    version: 1,
+                    direction: 'ltr',
+                    children: [
+                      {
+                        type: 'text',
+                        text,
+                        version: 1,
+                      },
+                    ],
+                  },
+                ],
+              },
+            }
+          },
+        ],
+      },
     },
     {
       name: 'usaPriceMin',

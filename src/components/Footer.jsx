@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import SmartLink from '@/components/SmartLink'
 import { getFooter } from '@/lib/data'
 
 const Footer = async () => {
@@ -6,7 +7,7 @@ const Footer = async () => {
 
   // Fallback data if CMS is empty
   const tagline = footerData.tagline || 'Premium dental care for NRIs. World-class treatment in India with seamless follow-up in the USA.'
-  const columns = footerData.columns.length > 0 ? footerData.columns : [
+  const baseColumns = footerData.columns.length > 0 ? footerData.columns : [
     {
       title: 'Company',
       links: [
@@ -14,6 +15,7 @@ const Footer = async () => {
         { label: 'Our Services', url: '/our-services' },
         { label: 'Our Clinics', url: '/clinics' },
         { label: 'Contact Us', url: '/contact-us' },
+        { label: 'Our Team', url: '/our-team' },
       ],
     },
     {
@@ -33,7 +35,25 @@ const Footer = async () => {
       ],
     },
   ]
-  const bottomText = footerData.bottomText || '© 2026 Atidi NRI Care. All rights reserved.'
+
+  // Ensure 'Our Team' link is always present under Company even if remote CMS database has not yet synced
+  const columns = baseColumns.map((col) => {
+    if (col.title?.toLowerCase() === 'company') {
+      const hasOurTeam = col.links?.some((l) => l.url === '/our-team' || l.label?.toLowerCase() === 'our team')
+      if (!hasOurTeam) {
+        return {
+          ...col,
+          links: [
+            ...(col.links || []),
+            { label: 'Our Team', url: '/our-team' },
+          ],
+        }
+      }
+    }
+    return col
+  })
+  const rawBottomText = footerData.bottomText || '© 2026 Atidi NRI Care. All rights reserved.'
+  const bottomText = rawBottomText.replace(/[\s·\-|•]*Powered by KTree.*$/i, '').trim() || '© 2026 Atidi NRI Care. All rights reserved.'
   const legalLinks = footerData.legalLinks.length > 0 ? footerData.legalLinks : [
     { label: 'Privacy Policy', url: '/privacy-policy' },
     { label: 'Terms of Service', url: '/terms-of-service' },
@@ -54,49 +74,29 @@ const Footer = async () => {
           {columns.map((column, index) => (
             <div key={index} className="footer-links">
               <h4>{column.title}</h4>
-              {column.links.map((link, linkIndex) => {
-                // Check if it's an internal link (starts with /) or anchor link (starts with #)
-                const isInternal = link.url.startsWith('/') || link.url.startsWith('#')
-
-                if (isInternal && !link.newTab) {
-                  return (
-                    <Link key={linkIndex} href={link.url}>
-                      {link.label}
-                    </Link>
-                  )
-                }
-
-                return (
-                  <a
-                    key={linkIndex}
-                    href={link.url}
-                    target={link.newTab ? '_blank' : undefined}
-                    rel={link.newTab ? 'noopener noreferrer' : undefined}
-                  >
-                    {link.label}
-                  </a>
-                )
-              })}
+              {column.links.map((link, linkIndex) => (
+                <SmartLink
+                  key={linkIndex}
+                  href={link.url}
+                  target={link.newTab ? '_blank' : undefined}
+                  rel={link.newTab ? 'noopener noreferrer' : undefined}
+                >
+                  {link.label}
+                </SmartLink>
+              ))}
             </div>
           ))}
         </div>
         <div className="footer-bottom">
           <p>
             {bottomText}
-            {' · Powered by '}
-            <a
-              href="https://ktree.com"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              KTree
-            </a>
+            {/* Powered by KTree · https://ktree.com */}
           </p>
           <p>
             {legalLinks.map((link, index) => (
               <span key={index}>
                 {index > 0 && ' | '}
-                <Link href={link.url}>{link.label}</Link>
+                <SmartLink href={link.url}>{link.label}</SmartLink>
               </span>
             ))}
           </p>

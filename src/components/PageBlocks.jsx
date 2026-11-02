@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
 import {
   MapPin, Phone, Mail, Clock, Globe, Shield, Heart, Star,
@@ -234,6 +235,115 @@ const LocationsBlock = ({ block, locations = [] }) => {
   )
 }
 
+const ClinicsBlock = ({ block, clinics = [] }) => {
+  const [selectedCity, setSelectedCity] = useState('all')
+
+  if (!clinics || clinics.length === 0) return null
+
+  // Extract unique cities directly from clinic data
+  const cities = ['all', ...Array.from(new Set(clinics.map((c) => c.city).filter(Boolean)))]
+
+  const filteredClinics = selectedCity === 'all'
+    ? clinics
+    : clinics.filter((c) => c.city === selectedCity)
+
+  return (
+    <section className={styles.section} id="clinics">
+      <div className={styles.container}>
+        <div className={styles.clinicsHeader}>
+          {block.eyebrow && <span className={styles.eyebrow}>{block.eyebrow}</span>}
+          <h2 className={styles.heading}>{block.heading || 'Partner Dental Hospitals & Clinics'}</h2>
+          <p className={styles.subheading}>
+            {block.subheading || 'Browse our network of vetted dental hospitals and specialized clinics across India.'}
+          </p>
+        </div>
+
+        {/* City Filter Tabs */}
+        {cities.length > 2 && (
+          <div className={styles.cityFilterWrap}>
+            {cities.map((city) => (
+              <button
+                key={city}
+                type="button"
+                className={`${styles.filterPill} ${selectedCity === city ? styles.filterPillActive : ''}`}
+                onClick={() => setSelectedCity(city)}
+              >
+                {city === 'all' ? `All Clinics (${clinics.length})` : city}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Clinics Grid - retrieved directly from clinics collection, no links to locations */}
+        <div className={styles.clinicsGrid}>
+          {filteredClinics.map((clinic) => (
+            <div key={clinic.id} className={styles.clinicCard}>
+              <div className={styles.clinicCardTop}>
+                <div>
+                  <h3 className={styles.clinicName}>{clinic.name}</h3>
+                  {clinic.city && (
+                    <span className={styles.clinicCityBadge}>
+                      {clinic.city}
+                    </span>
+                  )}
+                </div>
+                {clinic.rating && (
+                  <div className={styles.clinicRatingBadge}>
+                    <Star size={13} fill="currentColor" />
+                    <span>{Number(clinic.rating).toFixed(1)}</span>
+                    {clinic.reviewCount && (
+                      <span className={styles.clinicReviewCount}>({clinic.reviewCount})</span>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {clinic.address && (
+                <div className={styles.clinicInfoRow}>
+                  <MapPin size={14} className={styles.clinicInfoIcon} />
+                  <span>{clinic.address}</span>
+                </div>
+              )}
+
+              {/* Clinic phone number hidden — patients book via Atidi platform */}
+              {/* {clinic.phone && (
+                <div className={styles.clinicInfoRow}>
+                  <Phone size={14} className={styles.clinicInfoIcon} />
+                  <a href={`tel:${clinic.phone.replace(/[^0-9+]/g, '')}`} className={styles.clinicPhoneLink}>
+                    {clinic.phone}
+                  </a>
+                </div>
+              )} */}
+
+              {clinic.specialties && clinic.specialties.length > 0 && (
+                <div className={styles.clinicSpecialtiesList}>
+                  {clinic.specialties.slice(0, 4).map((spec, sIdx) => (
+                    <span key={sIdx} className={styles.specialtyTag}>{spec}</span>
+                  ))}
+                  {clinic.specialties.length > 4 && (
+                    <span className={styles.specialtyTag}>+{clinic.specialties.length - 4} more</span>
+                  )}
+                </div>
+              )}
+
+              <div className={styles.clinicCardAction}>
+                <a
+                  href="https://app.atidinricare.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.clinicBookBtn}
+                >
+                  Book Appointment <ArrowUpRight size={14} />
+                </a>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
 /**
  * Reuses the home page FAQ section. When the editor picked specific FAQs the
  * relationship arrives as full docs, so adapt them to the {question, answer[]}
@@ -311,6 +421,7 @@ const BLOCKS = {
   contactCards: ContactCardsBlock,
   treatmentsBlock: TreatmentsBlock,
   locationsBlock: LocationsBlock,
+  clinicsBlock: ClinicsBlock,
   faqBlock: FaqBlock,
   ctaBlock: CtaBlock,
   legalContent: LegalContentBlock,
@@ -321,10 +432,17 @@ const BLOCKS = {
  * rather than thrown, so adding a block in Payload before it has a renderer
  * degrades to a gap instead of a crashed page.
  */
-const PageBlocks = ({ layout, treatments, locations, faqs }) => (
+const PageBlocks = ({ layout, treatments, locations, faqs, clinics, isClinicsPage }) => (
   <>
     {(layout || []).map((block, i) => {
-      const Cmp = BLOCKS[block.blockType]
+      // If this is the clinics page and the block is locationsBlock,
+      // route to clinicsBlock so partner clinics are retrieved directly instead of locations
+      const effectiveType =
+        isClinicsPage && block.blockType === 'locationsBlock'
+          ? 'clinicsBlock'
+          : block.blockType
+
+      const Cmp = BLOCKS[effectiveType]
       if (!Cmp) return null
       return (
         <Cmp
@@ -333,6 +451,7 @@ const PageBlocks = ({ layout, treatments, locations, faqs }) => (
           treatments={treatments}
           locations={locations}
           faqs={faqs}
+          clinics={clinics}
         />
       )
     })}

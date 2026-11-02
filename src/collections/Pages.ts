@@ -64,6 +64,17 @@ export const Pages: CollectionConfig = {
                 { name: 'link', type: 'text' },
               ],
             },
+            {
+              name: 'stats',
+              type: 'array',
+              label: 'Hero Stats',
+              fields: [
+                { name: 'value', type: 'text', required: true, label: 'Value' },
+                { name: 'label', type: 'text', required: true, label: 'Label' },
+                { name: 'prefix', type: 'text', label: 'Prefix' },
+                { name: 'suffix', type: 'text', label: 'Suffix' },
+              ],
+            },
             { name: 'backgroundImage', type: 'upload', relationTo: 'media' },
             {
               name: 'background',
@@ -189,14 +200,149 @@ export const Pages: CollectionConfig = {
           ],
         },
 
+        // Trust banner & featured in block
+        {
+          slug: 'trustBanner',
+          labels: { singular: 'Trust Banner & Featured In', plural: 'Trust Banners' },
+          fields: [
+            {
+              name: 'items',
+              type: 'array',
+              label: 'Trust Metrics / Cards',
+              labels: { singular: 'Metric Card', plural: 'Metric Cards' },
+              fields: [
+                {
+                  name: 'icon',
+                  type: 'text',
+                  label: 'Icon (hospital, savings, support, records)',
+                  defaultValue: 'hospital',
+                  admin: {
+                    description: 'Choose icon: hospital, savings, support, or records',
+                  },
+                },
+                { name: 'number', type: 'text', label: 'Number / Stat', required: true },
+                { name: 'title', type: 'text', label: 'Title', required: true },
+                { name: 'subtitle', type: 'text', label: 'Subtitle / Description' },
+              ],
+            },
+            {
+              name: 'mediaHeading',
+              type: 'text',
+              label: 'Media Section Heading',
+              defaultValue: 'As Featured In',
+            },
+            {
+              name: 'mediaLogos',
+              type: 'array',
+              label: 'Media Publications',
+              labels: { singular: 'Publication', plural: 'Publications' },
+              fields: [
+                { name: 'name', type: 'text', required: true, label: 'Publication Name' },
+                { name: 'image', type: 'upload', relationTo: 'media', label: 'Logo Image (Optional)' },
+              ],
+            },
+          ],
+        },
+
         // Treatments reference block
         {
           slug: 'treatmentsBlock',
           labels: { singular: 'Treatments Section', plural: 'Treatments Sections' },
           fields: [
-            { name: 'heading', type: 'text', defaultValue: 'Our Treatments' },
-            { name: 'subheading', type: 'textarea' },
+            { name: 'eyebrow', type: 'text', label: 'Eyebrow / Badge', defaultValue: 'Treatments' },
+            {
+              name: 'heading',
+              type: 'textarea',
+              label: 'Heading',
+              defaultValue: 'World-class\nprocedures,\n*fraction* of the\ncost.',
+              admin: {
+                description: 'Section heading. Use line breaks for multiple lines. Use *word* for italic highlight.',
+              },
+            },
+            {
+              name: 'subheading',
+              type: 'textarea',
+              label: 'Subheading',
+              defaultValue: 'Click on treatment to see full details and procedure information',
+            },
             { name: 'showFeaturedOnly', type: 'checkbox', defaultValue: true },
+          ],
+        },
+
+        // Process / How It Works block
+        {
+          slug: 'howItWorksBlock',
+          labels: { singular: 'Process Section', plural: 'Process Sections' },
+          fields: [
+            {
+              name: 'eyebrow',
+              type: 'text',
+              label: 'Eyebrow / Badge',
+              defaultValue: 'Process',
+            },
+            {
+              name: 'title',
+              type: 'textarea',
+              label: 'Section Title',
+              defaultValue: 'Three\nsimple\nsteps.',
+              admin: {
+                description: 'Section heading. Use line breaks for multiple lines.',
+              },
+            },
+            {
+              name: 'iconImage',
+              type: 'upload',
+              relationTo: 'media',
+              label: 'Travel Icon Image (Upload)',
+            },
+            {
+              name: 'iconImageUrl',
+              type: 'text',
+              label: 'Icon Image URL (Fallback)',
+              defaultValue: '/Suitcase_flight.png',
+            },
+            {
+              name: 'bgNumber',
+              type: 'text',
+              label: 'Background Watermark Number',
+              defaultValue: '03',
+            },
+            {
+              name: 'steps',
+              type: 'array',
+              label: 'Process Steps',
+              labels: { singular: 'Step', plural: 'Steps' },
+              fields: [
+                {
+                  name: 'number',
+                  type: 'text',
+                  label: 'Step Number',
+                  required: true,
+                  defaultValue: '01',
+                },
+                {
+                  name: 'title',
+                  type: 'text',
+                  label: 'Step Title',
+                  required: true,
+                },
+                {
+                  name: 'description',
+                  type: 'textarea',
+                  label: 'Step Description',
+                  required: true,
+                },
+                {
+                  name: 'icon',
+                  type: 'text',
+                  label: 'Icon Name',
+                  defaultValue: 'Calendar',
+                  admin: {
+                    description: 'Lucide icon name (e.g. Calendar, Building2, Home, CheckCircle, Shield, Clock, etc.)',
+                  },
+                },
+              ],
+            },
           ],
         },
 
@@ -205,8 +351,45 @@ export const Pages: CollectionConfig = {
           slug: 'locationsBlock',
           labels: { singular: 'Locations Section', plural: 'Locations Sections' },
           fields: [
-            { name: 'heading', type: 'text', defaultValue: 'Our Locations' },
+            { name: 'eyebrow', type: 'text', label: 'Eyebrow / Badge', defaultValue: 'Our Network' },
+            { name: 'heading', type: 'text', label: 'Heading', defaultValue: 'Treatment in India, follow-up in America.' },
+            { name: 'subheading', type: 'textarea', label: 'Subheading / Description', defaultValue: 'Our network spans 23 South Indian cities and 10 USA states for seamless care continuity' },
+            {
+              type: 'row',
+              fields: [
+                { name: 'indiaCount', type: 'text', label: 'India Stat Number', defaultValue: '23' },
+                { name: 'indiaLabel', type: 'text', label: 'India Stat Label', defaultValue: 'South Indian Cities' },
+              ],
+            },
+            {
+              type: 'row',
+              fields: [
+                { name: 'usCount', type: 'text', label: 'USA Stat Number', defaultValue: '10' },
+                { name: 'usLabel', type: 'text', label: 'USA Stat Label', defaultValue: 'USA States' },
+              ],
+            },
+          ],
+        },
+
+        // Clinics reference block
+        {
+          slug: 'clinicsBlock',
+          labels: { singular: 'Clinics Section', plural: 'Clinics Sections' },
+          fields: [
+            { name: 'heading', type: 'text', defaultValue: 'Partner Dental Hospitals & Clinics' },
             { name: 'subheading', type: 'textarea' },
+          ],
+        },
+
+        // Testimonials reference block
+        {
+          slug: 'testimonialsBlock',
+          labels: { singular: 'Testimonials Section', plural: 'Testimonials Sections' },
+          fields: [
+            { name: 'eyebrow', type: 'text', label: 'Eyebrow / Badge', defaultValue: 'Testimonials' },
+            { name: 'heading', type: 'text', label: 'Heading', defaultValue: 'Their words,\ntheir journey.' },
+            { name: 'subheading', type: 'textarea', label: 'Subheading / Description', defaultValue: 'Patients who travelled for treatment, in their own words' },
+            { name: 'showFeaturedOnly', type: 'checkbox', label: 'Show Featured Testimonials Only', defaultValue: false },
           ],
         },
 
@@ -215,7 +398,32 @@ export const Pages: CollectionConfig = {
           slug: 'faqBlock',
           labels: { singular: 'FAQ Section', plural: 'FAQ Sections' },
           fields: [
-            { name: 'heading', type: 'text', defaultValue: 'Frequently Asked Questions' },
+            { name: 'eyebrow', type: 'text', label: 'Eyebrow / Badge', defaultValue: 'FAQ' },
+            { name: 'heading', type: 'text', label: 'Heading', defaultValue: 'Questions,\nanswered.' },
+            { name: 'subheading', type: 'textarea', label: 'Subheading', defaultValue: 'Everything you need to know about your dental journey with us' },
+            {
+              type: 'row',
+              fields: [
+                {
+                  name: 'bannerLine1',
+                  type: 'text',
+                  label: 'Care Banner Line 1',
+                  defaultValue: 'Every step,',
+                },
+                {
+                  name: 'bannerLine2',
+                  type: 'text',
+                  label: 'Care Banner Line 2 (Emphasized)',
+                  defaultValue: 'cared for.',
+                },
+              ],
+            },
+            {
+              name: 'bannerSubtitle',
+              type: 'textarea',
+              label: 'Care Banner Description',
+              defaultValue: 'From consultation to return, our Care Manager will coordinate your entire dental journey so you can focus on what matters.',
+            },
             {
               name: 'faqs',
               type: 'relationship',
@@ -231,7 +439,8 @@ export const Pages: CollectionConfig = {
           slug: 'ctaBlock',
           labels: { singular: 'Call to Action', plural: 'Call to Actions' },
           fields: [
-            { name: 'heading', type: 'text', required: true },
+            { name: 'eyebrow', type: 'text', label: 'Eyebrow / Badge', defaultValue: 'Start Your Journey' },
+            { name: 'heading', type: 'text', required: true, defaultValue: 'Ready to start your dental journey?' },
             { name: 'subheading', type: 'textarea' },
             {
               name: 'button',
@@ -244,10 +453,56 @@ export const Pages: CollectionConfig = {
             {
               name: 'style',
               type: 'select',
-              defaultValue: 'standard',
+              defaultValue: 'premium',
               options: [
                 { label: 'Standard', value: 'standard' },
                 { label: 'Premium (with mockup)', value: 'premium' },
+              ],
+            },
+            {
+              name: 'screens',
+              type: 'array',
+              label: 'App Screenshots / Mockups',
+              labels: {
+                singular: 'App Screen',
+                plural: 'App Screens',
+              },
+              admin: {
+                condition: (_, siblingData) => siblingData?.style === 'premium',
+                description: 'Screenshots displayed on the rotating phone mockup when Style is Premium.',
+              },
+              fields: [
+                {
+                  name: 'image',
+                  type: 'upload',
+                  relationTo: 'media',
+                  label: 'Screen Image (Upload)',
+                  admin: {
+                    description: 'Upload screenshot from your device or choose from Media Library',
+                  },
+                },
+                {
+                  name: 'imageUrl',
+                  type: 'text',
+                  label: 'Image URL / Local Path (Fallback)',
+                  admin: {
+                    description: 'Direct URL or path like /appimage1.jpeg if not uploading to media',
+                  },
+                },
+                {
+                  name: 'label',
+                  type: 'text',
+                  label: 'Screen Label / Step',
+                  defaultValue: '01',
+                  admin: {
+                    description: 'Short indicator label (e.g. 01, 02, or Reports, Booking)',
+                  },
+                },
+                {
+                  name: 'caption',
+                  type: 'text',
+                  label: 'Caption / Alt Text',
+                },
               ],
             },
           ],

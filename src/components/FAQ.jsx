@@ -64,9 +64,41 @@ const fallbackFaqs = [
   },
 ];
 
-const FAQ = ({ faqs: faqsProp } = {}) => {
+const FAQ = ({ faqs: faqsProp, faqBlock } = {}) => {
   const [expandedIndex, setExpandedIndex] = useState(0);
   const activeFaqs = faqsProp && faqsProp.length > 0 ? faqsProp : fallbackFaqs;
+
+  const eyebrow = faqBlock?.eyebrow || 'FAQ';
+  const subtitle = faqBlock?.subheading || 'Everything you need to know about your dental journey with us';
+  const rawHeading = faqBlock?.heading;
+
+  const renderHeading = () => {
+    if (!rawHeading || rawHeading === 'Questions,\nanswered.') {
+      return (
+        <>
+          <span className={styles.titleLine1}>Questions<span className={styles.comma}>,</span></span>
+          <span className={styles.titleLine2}><em>answered</em><span className={styles.dot}>.</span></span>
+        </>
+      );
+    }
+    if (rawHeading.includes('\n')) {
+      const [line1, ...rest] = rawHeading.split('\n');
+      const line2 = rest.join(' ');
+      const cleanLine2 = line2.endsWith('.') ? line2.slice(0, -1) : line2;
+      return (
+        <>
+          <span className={styles.titleLine1}>{line1}</span>
+          <span className={styles.titleLine2}><em>{cleanLine2}</em><span className={styles.dot}>.</span></span>
+        </>
+      );
+    }
+    return <span>{rawHeading}</span>;
+  };
+
+  const bannerLine1 = faqBlock?.bannerLine1 || 'Every step,';
+  const rawBannerLine2 = faqBlock?.bannerLine2 || 'cared for.';
+  const bannerLine2Clean = rawBannerLine2.endsWith('.') ? rawBannerLine2.slice(0, -1) : rawBannerLine2;
+  const bannerSubtitle = faqBlock?.bannerSubtitle || 'From consultation to return, our Care Manager will coordinate your entire dental journey so you can focus on what matters.';
 
   return (
     <section className={styles.section} id="faq">
@@ -84,7 +116,7 @@ const FAQ = ({ faqs: faqsProp } = {}) => {
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
             >
-              FAQ
+              {eyebrow}
             </motion.span>
             <motion.h2
               className={styles.title}
@@ -93,8 +125,7 @@ const FAQ = ({ faqs: faqsProp } = {}) => {
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.1 }}
             >
-              <span className={styles.titleLine1}>Questions<span className={styles.comma}>,</span></span>
-              <span className={styles.titleLine2}><em>answered</em><span className={styles.dot}>.</span></span>
+              {renderHeading()}
             </motion.h2>
           </div>
 
@@ -106,7 +137,7 @@ const FAQ = ({ faqs: faqsProp } = {}) => {
             transition={{ duration: 0.6, delay: 0.2 }}
           >
             <p className={styles.subtitle}>
-              Everything you need to know about your dental journey with us
+              {subtitle}
             </p>
             <div className={styles.counter}>
               <span className={styles.counterCurrent}>0{expandedIndex + 1}</span>
@@ -181,11 +212,11 @@ const FAQ = ({ faqs: faqsProp } = {}) => {
         >
           <div className={styles.bannerContent}>
             <div className={styles.bannerText}>
-              <span className={styles.bannerLine1}>Every step,</span>
-              <span className={styles.bannerLine2}><em>cared for</em><span className={styles.bannerDot}>.</span></span>
+              <span className={styles.bannerLine1}>{bannerLine1}</span>
+              <span className={styles.bannerLine2}><em>{bannerLine2Clean}</em><span className={styles.bannerDot}>.</span></span>
             </div>
             <p className={styles.bannerSubtitle}>
-              From consultation to return, our Care Manager will coordinate your entire dental journey so you can focus on what matters.
+              {bannerSubtitle}
             </p>
           </div>
           <div className={styles.bannerGlow} />

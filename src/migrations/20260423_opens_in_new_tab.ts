@@ -56,7 +56,7 @@ export async function up({ db, payload }: MigrateUpArgs): Promise<void> {
 
   // 4. Update HeroContent global: new subheadline + US-states stat 8 → 10.
   try {
-    const current = (await payload.findGlobal({ slug: 'hero-content' })) as any
+    const current = (await payload.findGlobal({ slug: 'hero-content' as any })) as any
     const updatedStats = (current?.stats ?? []).map((s: any) => {
       const label = (s?.label || '').toLowerCase()
       if (label.includes('us states') || label.includes('states covered')) {
@@ -65,7 +65,7 @@ export async function up({ db, payload }: MigrateUpArgs): Promise<void> {
       return s
     })
     await payload.updateGlobal({
-      slug: 'hero-content',
+      slug: 'hero-content' as any,
       data: {
         subheadline: NEW_HERO_SUBHEADLINE,
         stats: updatedStats,

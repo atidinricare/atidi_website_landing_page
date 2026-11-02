@@ -32,7 +32,7 @@ const groupByState = (locations) => {
   }));
 };
 
-const Locations = ({ indiaLocations, usLocations, onSelectLocation }) => {
+const Locations = ({ indiaLocations, usLocations, locationsHeader, onSelectLocation }) => {
   const [activeTab, setActiveTab] = useState('india');
   const [usaVisibleCount, setUsaVisibleCount] = useState(INITIAL_COUNT);
 
@@ -48,6 +48,73 @@ const Locations = ({ indiaLocations, usLocations, onSelectLocation }) => {
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
+  };
+
+  const labelText = locationsHeader?.eyebrow || 'Our Network';
+  const headingText = locationsHeader?.heading;
+  const subtitleText =
+    locationsHeader?.subheading ||
+    'Our network spans 23 South Indian cities and 10 USA states for seamless care continuity';
+
+  const indiaStatValue =
+    locationsHeader?.indiaCount ||
+    locationsHeader?.india_count ||
+    (indiaLocations?.length > 0 ? indiaLocations.length : '23');
+  const indiaStatLabel =
+    locationsHeader?.indiaLabel ||
+    locationsHeader?.india_label ||
+    'South Indian Cities';
+
+  const usStatValue =
+    locationsHeader?.usCount ||
+    locationsHeader?.us_count ||
+    (usLocations?.length > 0 ? usLocations.length : '10');
+  const usStatLabel =
+    locationsHeader?.usLabel ||
+    locationsHeader?.us_label ||
+    'USA States';
+
+  const renderTitle = () => {
+    if (headingText && headingText.trim()) {
+      const lines = headingText.split('\n').map((l) => l.trim()).filter(Boolean);
+      if (lines.length === 1) {
+        return (
+          <span
+            className={styles.titleLine1}
+            dangerouslySetInnerHTML={{
+              __html: lines[0].replace(/\*([^*]+)\*/g, '<em>$1</em>'),
+            }}
+          />
+        );
+      }
+      return (
+        <>
+          {lines.map((line, idx) => {
+            const cls = idx === 0 ? styles.titleLine1 : styles.titleLine2;
+            return (
+              <span
+                key={idx}
+                className={cls}
+                dangerouslySetInnerHTML={{
+                  __html: line.replace(/\*([^*]+)\*/g, '<em>$1</em>'),
+                }}
+              />
+            );
+          })}
+        </>
+      );
+    }
+
+    return (
+      <>
+        <span className={styles.titleLine1}>
+          Treatment in India<span className={styles.comma}>,</span>
+        </span>
+        <span className={styles.titleLine2}>
+          follow-up in <em>America</em><span className={styles.dot}>.</span>
+        </span>
+      </>
+    );
   };
 
   return (
@@ -66,7 +133,7 @@ const Locations = ({ indiaLocations, usLocations, onSelectLocation }) => {
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
             >
-              Our Network
+              {labelText}
             </motion.span>
             <motion.h2
               className={styles.title}
@@ -75,8 +142,7 @@ const Locations = ({ indiaLocations, usLocations, onSelectLocation }) => {
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.1 }}
             >
-              <span className={styles.titleLine1}>Treatment in India<span className={styles.comma}>,</span></span>
-              <span className={styles.titleLine2}>follow-up in <em>America</em><span className={styles.dot}>.</span></span>
+              {renderTitle()}
             </motion.h2>
           </div>
 
@@ -88,17 +154,17 @@ const Locations = ({ indiaLocations, usLocations, onSelectLocation }) => {
             transition={{ duration: 0.6, delay: 0.2 }}
           >
             <p className={styles.subtitle}>
-              <strong>Our network spans 23 South Indian cities and 10 USA states for seamless care continuity</strong>
+              <strong>{subtitleText}</strong>
             </p>
             <div className={styles.stats}>
               <div className={styles.stat}>
-                <span className={styles.statValue}>23</span>
-                <span className={styles.statLabel}>South Indian Cities</span>
+                <span className={styles.statValue}>{indiaStatValue}</span>
+                <span className={styles.statLabel}>{indiaStatLabel}</span>
               </div>
               <div className={styles.statDivider} />
               <div className={styles.stat}>
-                <span className={styles.statValue}>10</span>
-                <span className={styles.statLabel}>USA States</span>
+                <span className={styles.statValue}>{usStatValue}</span>
+                <span className={styles.statLabel}>{usStatLabel}</span>
               </div>
             </div>
           </motion.div>

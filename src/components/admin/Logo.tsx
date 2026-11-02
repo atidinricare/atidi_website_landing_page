@@ -5,22 +5,20 @@ const Logo = () => {
     <div style={{
       display: 'flex',
       alignItems: 'center',
-      gap: '12px',
-      padding: '10px 0'
+      padding: '8px 0',
+      width: '100%',
     }}>
       <img
-        src="/athidi.png"
+        src="/admin-logo.png"
         alt="Atidi NRI Care"
-        style={{ height: '40px', width: 'auto' }}
+        style={{
+          height: '56px',
+          width: 'auto',
+          maxWidth: '220px',
+          objectFit: 'contain',
+          display: 'block',
+        }}
       />
-      <span style={{
-        fontSize: '14px',
-        fontWeight: 600,
-        color: '#1a1a2e',
-        letterSpacing: '0.5px'
-      }}>
-        KTree CMS
-      </span>
     </div>
   )
 }

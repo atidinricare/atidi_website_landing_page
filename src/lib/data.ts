@@ -77,9 +77,9 @@ export async function getLocations() {
   // Group clinics by location ID
   const clinicsByLocation: Record<string | number, any[]> = {}
   for (const clinic of clinicsResult.docs) {
-    const locId = typeof clinic.location === 'object' ? clinic.location.id : clinic.location
-    if (!clinicsByLocation[locId]) clinicsByLocation[locId] = []
-    clinicsByLocation[locId].push(clinic)
+    const locId = (typeof clinic.location === 'object' && clinic.location !== null) ? (clinic.location as any).id : clinic.location
+    if (locId && !clinicsByLocation[locId]) clinicsByLocation[locId] = []
+    if (locId) clinicsByLocation[locId].push(clinic)
   }
 
   const india = indiaResult.docs.map((doc) =>
@@ -119,6 +119,100 @@ export async function getLocationBySlug(slug: string) {
   }
 
   return adaptLocation(doc, clinics)
+}
+
+function resolveClinicCity(clinic: any): string {
+  if (clinic.city && typeof clinic.city === 'string' && clinic.city.trim()) {
+    return clinic.city.trim()
+  }
+  if (typeof clinic.location === 'object' && clinic.location !== null && clinic.location.city) {
+    return String(clinic.location.city).trim()
+  }
+  const text = `${clinic.name || ''} ${clinic.address || ''}`
+  const knownCities = [
+    'Hyderabad', 'Bangalore', 'Chennai', 'Mumbai', 'Delhi', 'Kochi', 'Vijayawada',
+    'Visakhapatnam', 'Coimbatore', 'Pune', 'Kolkata', 'Ahmedabad', 'Jaipur', 'Chandigarh',
+    'Trivandrum', 'Goa', 'Madurai', 'Mysore', 'Guntur', 'Warangal', 'Nellore', 'Tirupati'
+  ]
+  for (const city of knownCities) {
+    if (new RegExp(`\\b${city}\\b`, 'i').test(text)) {
+      return city
+    }
+  }
+  return ''
+}
+
+/**
+ * Get all clinics from Payload CMS via Local API.
+ * Fetches clinic documents directly from the clinics collection in KTree CMS.
+ * Does not require or link to the locations collection.
+ */
+export async function getClinics() {
+  const payload = await getPayload({ config })
+
+  // Query published clinics first
+  let result = await payload.find({
+    collection: 'clinics',
+    where: { status: { equals: 'published' } },
+    depth: 2,
+    limit: 200,
+    sort: 'name',
+  })
+
+  // If none returned with published filter, retrieve all clinics
+  if (result.docs.length === 0) {
+    result = await payload.find({
+      collection: 'clinics',
+      depth: 2,
+      limit: 200,
+      sort: 'name',
+    })
+  }
+
+  // If database collection has records, map and return them
+  if (result.docs.length > 0) {
+    return result.docs.map((clinic: any) => {
+      const city = resolveClinicCity(clinic)
+      const state =
+        clinic.state ||
+        (typeof clinic.location === 'object' && clinic.location !== null ? clinic.location.state : '') ||
+        ''
+
+      return {
+        id: clinic.id,
+        name: clinic.name,
+        address: clinic.address,
+        phone: clinic.phone || '',
+        specialties: (clinic.specialties || [])
+          .map((s: any) => (typeof s === 'object' && s !== null ? s.specialty || '' : s))
+          .filter(Boolean),
+        rating: clinic.rating || null,
+        reviewCount: clinic.reviewCount || null,
+        city,
+        state,
+      }
+    })
+  }
+
+  // Fallback: If clinics collection has no documents, use seed data
+  const { indiaLocationsData } = await import('@/seed/locations-data')
+  const fallbackList: any[] = []
+  indiaLocationsData.forEach((loc) => {
+    (loc.clinics || []).forEach((c, idx) => {
+      fallbackList.push({
+        id: `${loc.id}-${idx}`,
+        name: c.name,
+        address: c.address,
+        phone: c.phone || '',
+        specialties: c.specialties || [],
+        rating: c.rating || null,
+        reviewCount: c.reviewCount || null,
+        city: loc.city,
+        state: loc.state,
+      })
+    })
+  })
+  return fallbackList
 }
 
 /**
@@ -202,37 +296,6 @@ export async function getPostBySlug(slug: string) {
   }
 }
 
-/**
- * Get Hero Content global from Payload CMS via Local API.
- */
-export async function getHeroContent() {
-  const payload = await getPayload({ config })
-
-  const result = await payload.findGlobal({
-    slug: 'hero-content',
-    depth: 1,
-  })
-
-  return {
-    headline: result.headline || '',
-    subheadline: result.subheadline || '',
-    ctaPrimary: {
-      label: result.ctaPrimary?.label || 'Book an Appointment',
-      link: result.ctaPrimary?.link || 'https://app.atidinricare.com/',
-    },
-    ctaSecondary: {
-      label: result.ctaSecondary?.label || 'Watch Our Story',
-      link: result.ctaSecondary?.link || '',
-    },
-    stats: (result.stats || []).map((stat: any) => ({
-      value: stat.value,
-      label: stat.label,
-      prefix: stat.prefix || '',
-      suffix: stat.suffix || '',
-    })),
-    backgroundImage: typeof result.backgroundImage === 'object' ? result.backgroundImage?.url : null,
-  }
-}
 
 /**
  * Get Site Settings global from Payload CMS via Local API.
@@ -368,17 +431,25 @@ export async function getTestimonials() {
  * Get a single published page by slug from Payload CMS via Local API.
  * Returns null when no published page matches, so the route can 404.
  */
-export async function getPageBySlug(slug: string) {
+export async function getPageBySlug(slug: string, options?: { draft?: boolean }) {
   const payload = await getPayload({ config })
+
+  // Support both 'clinics' and 'our-clinics' interchangeably
+  const effectiveSlug = slug === 'our-clinics' ? 'clinics' : slug
+
+  // In development, also check draft versions so CMS edits show immediately without requiring Publish
+  const isDev = process.env.NODE_ENV === 'development'
+  const shouldFetchDraft = options?.draft ?? isDev
 
   const result = await payload.find({
     collection: 'pages',
     where: {
-      slug: { equals: slug },
+      slug: { equals: effectiveSlug },
       status: { equals: 'published' },
     },
     depth: 2,
     limit: 1,
+    draft: shouldFetchDraft,
   })
 
   return result.docs[0] ?? null
@@ -403,3 +474,22 @@ export async function getPageSlugs() {
     .map((doc: any) => doc.slug)
     .filter((slug: string) => slug && slug !== 'home')
 }
+
+/**
+ * Fetch all published activities ordered by activityDate descending
+ */
+/*export async function getActivities() {
+  const payload = await getPayload({ config })
+
+  const result = await payload.find({
+    collection: 'activities' as any,
+    where: {
+      status: { equals: 'published' },
+    },
+    sort: '-activityDate',
+    depth: 2,
+    limit: 100,
+  })
+
+  return result.docs || []
+}*/

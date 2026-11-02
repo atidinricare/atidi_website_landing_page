@@ -1,11 +1,66 @@
 'use client'
 import { motion, useScroll, useTransform, useInView, useMotionValue, useSpring, AnimatePresence } from 'framer-motion';
 import { useRef, useState, useEffect } from 'react';
-import { Calendar, Building2, Home, Sparkles } from 'lucide-react';
+import {
+  Calendar,
+  Building2,
+  Home,
+  Sparkles,
+  CheckCircle,
+  Shield,
+  Clock,
+  Phone,
+  Plane,
+  FileText,
+  User,
+  MapPin,
+  Heart,
+  Stethoscope,
+  Smile,
+  Award,
+} from 'lucide-react';
 import { getImageUrl } from '@/lib/image-url';
 import styles from './HowItWorks.module.css';
 
-const steps = [
+const ICON_MAP = {
+  calendar: Calendar,
+  building2: Building2,
+  building: Building2,
+  hospital: Building2,
+  home: Home,
+  check: CheckCircle,
+  checkcircle: CheckCircle,
+  shield: Shield,
+  sparkles: Sparkles,
+  clock: Clock,
+  phone: Phone,
+  plane: Plane,
+  filetext: FileText,
+  user: User,
+  mappin: MapPin,
+  heart: Heart,
+  stethoscope: Stethoscope,
+  smile: Smile,
+  award: Award,
+  Calendar,
+  Building2,
+  Home,
+  CheckCircle,
+  Shield,
+  Sparkles,
+  Clock,
+  Phone,
+  Plane,
+  FileText,
+  User,
+  MapPin,
+  Heart,
+  Stethoscope,
+  Smile,
+  Award,
+};
+
+const DEFAULT_STEPS = [
   {
     id: 1,
     number: '01',
@@ -29,6 +84,36 @@ const steps = [
   },
 ];
 
+// Helper to render title with line breaks and signature terracotta dot
+const renderTitle = (rawTitle) => {
+  if (!rawTitle) {
+    return (
+      <>
+        Three<br />
+        simple<br />
+        steps<span className={styles.dot}>.</span>
+      </>
+    );
+  }
+  const lines = String(rawTitle).split('\n');
+  return lines.map((line, idx) => {
+    const isLast = idx === lines.length - 1;
+    let content = line;
+    let hasDot = false;
+    if (isLast && line.endsWith('.')) {
+      content = line.slice(0, -1);
+      hasDot = true;
+    }
+    return (
+      <span key={idx}>
+        {content}
+        {hasDot && <span className={styles.dot}>.</span>}
+        {!isLast && <br />}
+      </span>
+    );
+  });
+};
+
 // Animated counter for numbers
 const AnimatedNumber = ({ number, isInView, delay }) => {
   const [displayNumber, setDisplayNumber] = useState('00');
@@ -37,7 +122,11 @@ const AnimatedNumber = ({ number, isInView, delay }) => {
     if (isInView) {
       const timer = setTimeout(() => {
         let count = 0;
-        const target = parseInt(number);
+        const target = parseInt(number, 10);
+        if (isNaN(target)) {
+          setDisplayNumber(String(number));
+          return;
+        }
         const interval = setInterval(() => {
           count++;
           setDisplayNumber(count.toString().padStart(2, '0'));
@@ -241,7 +330,7 @@ const AnimatedStep = ({ step, index, isInView }) => {
   );
 };
 
-const HowItWorks = ({ assetBaseUrl } = {}) => {
+const HowItWorks = ({ data, assetBaseUrl } = {}) => {
   const sectionRef = useRef(null);
   const stepsRef = useRef(null);
   const isInView = useInView(stepsRef, { once: true, margin: "-100px" });
@@ -253,15 +342,43 @@ const HowItWorks = ({ assetBaseUrl } = {}) => {
 
   const lineWidth = useTransform(scrollYProgress, [0.1, 0.5], ["0%", "100%"]);
 
+  let iconSrc = getImageUrl('/Suitcase_flight.png', assetBaseUrl);
+  if (data?.iconImage && typeof data.iconImage === 'object' && data.iconImage.url) {
+    iconSrc = data.iconImage.url;
+  } else if (typeof data?.iconImage === 'string') {
+    iconSrc = data.iconImage;
+  } else if (data?.iconImageUrl) {
+    iconSrc = getImageUrl(data.iconImageUrl, assetBaseUrl);
+  }
+
+  const eyebrow = data?.eyebrow || 'Process';
+
+  const steps = data?.steps && Array.isArray(data.steps) && data.steps.length > 0
+    ? data.steps.map((st, idx) => {
+        const rawIcon = st.icon || (idx === 0 ? 'Calendar' : idx === 1 ? 'Building2' : 'Home');
+        const IconComp = ICON_MAP[rawIcon.toLowerCase()] || ICON_MAP[rawIcon] || (idx === 0 ? Calendar : idx === 1 ? Building2 : Home);
+        return {
+          id: st.id || idx + 1,
+          number: st.number || String(idx + 1).padStart(2, '0'),
+          title: st.title,
+          description: st.description,
+          icon: IconComp,
+        };
+      })
+    : DEFAULT_STEPS;
+
+  const bgNumber = data?.bgNumber || (steps.length > 0 ? String(steps.length).padStart(2, '0') : '03');
+
   return (
     <section className={styles.section} ref={sectionRef} id="how-it-works">
+      <span id="process" style={{ position: 'absolute', top: '-80px' }} />
       <div className={styles.bg} />
 
       <div className={styles.container}>
         {/* Left side - Big typography */}
         <div className={styles.left}>
           <motion.img
-            src={getImageUrl('/Suitcase_flight.png', assetBaseUrl)}
+            src={iconSrc}
             alt="Travel icon"
             onError={(e) => { e.target.src = '/Suitcase_flight.png' }}
             className={styles.icon}
@@ -277,13 +394,11 @@ const HowItWorks = ({ assetBaseUrl } = {}) => {
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.1 }}
           >
-            <span className={styles.label}>Process</span>
+            <span className={styles.label}>{eyebrow}</span>
           </motion.div>
 
           <h2 className={styles.title}>
-            Three<br />
-            simple<br />
-            steps<span className={styles.dot}>.</span>
+            {renderTitle(data?.title)}
           </h2>
 
           <motion.div
@@ -323,7 +438,7 @@ const HowItWorks = ({ assetBaseUrl } = {}) => {
         viewport={{ once: true }}
         transition={{ duration: 1.5 }}
       >
-        03
+        {bgNumber}
       </motion.span>
     </section>
   );

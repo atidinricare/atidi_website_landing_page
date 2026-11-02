@@ -1,30 +1,34 @@
-import { getLocations } from '@/lib/data'
+
+import { getClinics, getPageBySlug } from '@/lib/data'
 import { buildPageMetadata, getPageSchema } from '@/lib/page-meta'
 import JsonLd from '@/components/JsonLd'
 import ClinicsPageClient from '@/components/ClinicsPageClient'
 
-// Static generation - revalidates on-demand when content changes in CMS
-export const revalidate = false
+// Force dynamic rendering so CMS clinic updates appear immediately
+export const dynamic = 'force-dynamic'
 
 export async function generateMetadata() {
-  return buildPageMetadata('clinics', {
-    title: 'Our Clinics - Atidi NRI Care',
-    description: 'Explore Atidi NRI Care partner clinics across India and the USA. World-class dental facilities with JCI-accredited standards.',
-    keywords: 'NRI dental clinics, dental clinics India, dental clinics USA, Atidi partner clinics',
+return buildPageMetadata('clinics', {
+    title: 'Our Partner Clinics - Atidi NRI Care',
+    description:
+      'Explore Atidi NRI Care vetted partner dental hospitals and clinics across India. MDS specialists with international standards.',
+    keywords:
+      'NRI dental clinics, partner dental hospitals, dental clinics India, vetted dentists India',
     canonical: '/clinics',
   })
 }
 
 export default async function ClinicsPage() {
-  const [locations, schema] = await Promise.all([getLocations(), getPageSchema('clinics')])
-
-  return (
+   const [clinics, schema] = await Promise.all([
+    getClinics(),
+    getPageSchema('clinics'),
+  ])
+   return (
     <>
       <JsonLd data={schema} />
-      <ClinicsPageClient
-        indiaLocations={locations.india}
-        usLocations={locations.us}
-      />
+      <ClinicsPageClient clinics={clinics as any} />
     </>
   )
 }
+
+

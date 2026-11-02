@@ -2,24 +2,21 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import Locations from '@/components/Locations';
-import SlidePanel from '@/components/SlidePanel';
-import LocationDetail from '@/components/LocationDetail';
+import { MapPin, Phone, Star, ArrowUpRight } from 'lucide-react';
 import styles from './ClinicsPage.module.css';
 
-const ClinicsPageClient = ({ indiaLocations, usLocations }) => {
-  const [selectedLocation, setSelectedLocation] = useState(null);
-  const [panelOpen, setPanelOpen] = useState(false);
+/**
+ * @param {{ clinics?: any[] }} props
+ */
+const ClinicsPageClient = ({ clinics = [] }) => {
+  const [selectedCity, setSelectedCity] = useState('all');
 
-  const handleSelectLocation = (location) => {
-    setSelectedLocation(location);
-    setPanelOpen(true);
-  };
+  // Extract unique cities directly from clinic data
+  const cities = ['all', ...Array.from(new Set(clinics.map((c) => c.city).filter(Boolean)))];
 
-  const closePanel = () => {
-    setPanelOpen(false);
-    setSelectedLocation(null);
-  };
+  const filteredClinics = selectedCity === 'all'
+    ? clinics
+    : clinics.filter((c) => c.city === selectedCity);
 
   return (
     <div className={styles.page}>
@@ -125,23 +122,101 @@ const ClinicsPageClient = ({ indiaLocations, usLocations }) => {
         </motion.div>
       </section>
 
-      {/* Locations Section */}
-      <Locations
-        indiaLocations={indiaLocations}
-        usLocations={usLocations}
-        onSelectLocation={handleSelectLocation}
-      />
+      {/* Partner Clinics Section — Direct from KTree CMS clinics collection (no links to locations) */}
+      <section className={styles.clinicsSection} id="partner-clinics">
+        <div className={styles.clinicsSectionInner}>
+          <div className={styles.clinicsHeader}>
+            <span className={styles.clinicsEyebrow}>Vetted Network</span>
+            <h2 className={styles.clinicsTitle}>Our Partner Dental Hospitals & Clinics</h2>
+            <p className={styles.clinicsSubtitle}>
+              Direct access to verified partner dental hospitals across India with MDS-qualified specialists and international standard hygiene.
+            </p>
+          </div>
 
-      {/* Slide Panel for Location Details */}
-      <SlidePanel
-        isOpen={panelOpen && selectedLocation !== null}
-        onClose={closePanel}
-        title={selectedLocation?.city || 'Location Details'}
-      >
-        <LocationDetail location={selectedLocation} />
-      </SlidePanel>
+          {/* City Filter Tabs */}
+          {cities.length > 2 && (
+            <div className={styles.cityFilterWrap}>
+              {cities.map((city) => (
+                <button
+                  key={city}
+                  type="button"
+                  className={`${styles.filterPill} ${selectedCity === city ? styles.filterPillActive : ''}`}
+                  onClick={() => setSelectedCity(city)}
+                >
+                  {city === 'all' ? `All Clinics (${clinics.length})` : city}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Clinics Grid */}
+          <div className={styles.clinicsGrid}>
+            {filteredClinics.map((clinic) => (
+              <div key={clinic.id} className={styles.clinicCard}>
+                <div className={styles.clinicCardTop}>
+                  <div>
+                    <h3 className={styles.clinicName}>{clinic.name}</h3>
+                    {clinic.city && (
+                      <span className={styles.clinicCityBadge}>{clinic.city}</span>
+                    )}
+                  </div>
+                  {clinic.rating && (
+                    <div className={styles.clinicRatingBadge}>
+                      <Star size={13} fill="currentColor" />
+                      <span>{Number(clinic.rating).toFixed(1)}</span>
+                      {clinic.reviewCount && (
+                        <span className={styles.clinicReviewCount}>({clinic.reviewCount})</span>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {clinic.address && (
+                  <div className={styles.clinicInfoRow}>
+                    <MapPin size={15} className={styles.clinicInfoIcon} />
+                    <span>{clinic.address}</span>
+                  </div>
+                )}
+
+                {/* Clinic phone number hidden — patients book via Atidi platform */}
+                {/* {clinic.phone && (
+                  <div className={styles.clinicInfoRow}>
+                    <Phone size={15} className={styles.clinicInfoIcon} />
+                    <a href={`tel:${clinic.phone.replace(/[^0-9+]/g, '')}`} className={styles.clinicPhoneLink}>
+                      {clinic.phone}
+                    </a>
+                  </div>
+                )} */}
+
+                {clinic.specialties && clinic.specialties.length > 0 && (
+                  <div className={styles.clinicSpecialtiesList}>
+                    {clinic.specialties.slice(0, 4).map((spec, sIdx) => (
+                      <span key={sIdx} className={styles.specialtyTag}>{spec}</span>
+                    ))}
+                    {clinic.specialties.length > 4 && (
+                      <span className={styles.specialtyTag}>+{clinic.specialties.length - 4} more</span>
+                    )}
+                  </div>
+                )}
+
+                <div className={styles.clinicCardAction}>
+                  <a
+                    href="https://app.atidinricare.com/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={styles.clinicBookBtn}
+                  >
+                    Book Appointment <ArrowUpRight size={14} />
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
     </div>
   );
 };
 
 export default ClinicsPageClient;
+

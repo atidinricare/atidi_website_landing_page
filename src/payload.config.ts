@@ -8,6 +8,7 @@ import { PayloadPluginCloudflarePurge } from 'payload-plugin-cloudflare-purge'
 import { cloudfrontPurgePlugin } from './plugins/cloudfront-purge'
 import { s3Storage } from '@payloadcms/storage-s3'
 import { readStorageConfig } from './lib/storage-config'
+
 import sharp from 'sharp'
 
 const storageConfig = readStorageConfig()
@@ -23,28 +24,65 @@ import { FAQs } from './collections/FAQs'
 import { Testimonials } from './collections/Testimonials'
 import { Categories } from './collections/Categories'
 import { Pages } from './collections/Pages'
+//import { Activities } from './collections/Activities'
 
 // Globals
 import { SiteSettings } from './globals/SiteSettings'
 import { Navigation } from './globals/Navigation'
 import { Footer } from './globals/Footer'
-import { HeroContent } from './globals/HeroContent'
 import { TrackingSettings } from './globals/TrackingSettings'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
+function getValidUrl(url?: string): string | undefined {
+  if (!url || typeof url !== 'string') return undefined
+  const trimmed = url.trim()
+  if (!trimmed.startsWith('http://') && !trimmed.startsWith('https://')) return undefined
+  try {
+    const parsed = new URL(trimmed)
+    return parsed.origin
+  } catch {
+    return undefined
+  }
+}
+
+const configuredServerUrl =
+  getValidUrl(process.env.NEXT_PUBLIC_SERVER_URL) ||
+  getValidUrl(process.env.SITE_URL) ||
+  'https://dev1.atidinricare.com'
+
+const allowedOrigins = [
+  'https://dev1.atidinricare.com',
+  'https://atidinricare.com',
+  'https://www.atidinricare.com',
+  'https://athidi-payload-node-dev.ktree.org',
+  'http://18.60.231.46:3000',
+  'http://18.60.231.46',
+  'http://localhost:3000',
+  'https://localhost:3000',
+  'http://localhost:5173',
+  getValidUrl(process.env.NEXT_PUBLIC_SERVER_URL),
+  getValidUrl(process.env.SITE_URL),
+].filter(Boolean) as string[]
+
 export default buildConfig({
   secret: process.env.PAYLOAD_SECRET || 'atidi-nri-care-default-secret-key',
 
-  cors: ['http://localhost:5173', 'http://localhost:3000'],
+  // Leaving serverURL undefined allows Payload to use relative URLs on the client,
+  // working seamlessly across https://dev1.atidinricare.com, staging, and localhost
+  serverURL: getValidUrl(process.env.NEXT_PUBLIC_SERVER_URL) || undefined,
+
+  cors: allowedOrigins,
+
+  csrf: allowedOrigins,
 
   admin: {
     user: Users.slug,
     meta: {
-      titleSuffix: '- KTree CMS',
+      titleSuffix: '- Atidi NRI Care',
       description: 'Atidi NRI Care Content Management System',
-      icons: [{ url: '/athidi.png' }],
+      icons: [{ url: '/admin-icon.png' }],
     },
     components: {
       graphics: {
@@ -64,13 +102,6 @@ export default buildConfig({
 
   i18n: {
     fallbackLanguage: 'en',
-    translations: {
-      en: {
-        general: {
-          payloadSettings: 'KTree CMS Settings',
-        },
-      },
-    },
   },
 
   editor: lexicalEditor({
@@ -98,13 +129,13 @@ export default buildConfig({
     Testimonials,
     Categories,
     Pages,
+    //Activities,
   ],
 
   globals: [
     SiteSettings,
     Navigation,
     Footer,
-    HeroContent,
     TrackingSettings,
   ],
 
@@ -122,6 +153,13 @@ export default buildConfig({
       uploadsCollection: 'media',
       generateTitle: ({ doc }) => `${(doc as any)?.name || (doc as any)?.title || ''} - Atidi NRI Care`,
       generateDescription: ({ doc }) => (doc as any)?.description || (doc as any)?.tagline || '',
+      generateURL: ({ doc, collectionSlug }) => {
+        const slug = (doc as any)?.slug || ''
+        const base = configuredServerUrl || 'https://dev1.atidinricare.com'
+        if (collectionSlug === 'pages') return slug === 'home' ? base : `${base}/${slug}`
+        if (collectionSlug === 'posts') return `${base}/blog/${slug}`
+        return `${base}/${collectionSlug}/${slug}`
+      },
       // The plugin ships title/description/image only. The routes already read
       // meta.keywords, but the field never existed, so the keywords tag was
       // never emitted. Add it here along with a slot for per-page structured
@@ -177,13 +215,13 @@ export default buildConfig({
           PayloadPluginCloudflarePurge({
             apiToken: storageConfig.cdn.cloudflare.apiToken,
             zoneId: storageConfig.cdn.cloudflare.zoneId,
-            baseUrl: process.env.SITE_URL || 'https://athidi-payload-node-dev.ktree.org',
+            baseUrl: configuredServerUrl,
             enabled: process.env.NODE_ENV === 'production',
             collections: ['treatments', 'locations', 'clinics', 'posts', 'pages', 'media'],
-            globals: ['site-settings', 'navigation', 'footer', 'hero-content'],
+            globals: ['site-settings', 'navigation', 'footer', 'hero-content', 'app-showcase'],
             events: ['afterChange', 'afterDelete'],
             urlBuilder: ({ collectionSlug, doc }) => {
-              const baseUrl = process.env.SITE_URL || 'https://athidi-payload-node-dev.ktree.org';
+              const baseUrl = configuredServerUrl;
               if (collectionSlug === 'treatments') return [`${baseUrl}/treatments/${doc.slug}`];
               if (collectionSlug === 'locations') return [`${baseUrl}/locations/${doc.slug}`];
               if (collectionSlug === 'posts') return [`${baseUrl}/blog/${doc.slug}`];
@@ -204,7 +242,7 @@ export default buildConfig({
             accessKeyId: storageConfig.cdn.cloudfront.accessKeyId,
             secretAccessKey: storageConfig.cdn.cloudfront.secretAccessKey,
             collections: ['treatments', 'locations', 'clinics', 'posts', 'pages', 'media'],
-            globals: ['site-settings', 'navigation', 'footer', 'hero-content'],
+            globals: ['site-settings', 'navigation', 'footer', 'hero-content', 'app-showcase'],
             events: ['create', 'update', 'delete'],
             buildPaths: ({ collection, doc }) => {
               if (collection === 'treatments') return [`/treatments/${doc.slug}`, '/treatments'];

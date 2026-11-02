@@ -13,6 +13,7 @@
     "generate:types": "payload generate:types",
     "generate:graphQLSchema": "payload generate:graphQLSchema",
     "seed": "tsx src/seed/index.ts",
+    "sync-db": "tsx scripts/run-sync.ts",
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
     "test": "playwright test",
     "test:ui": "playwright test --ui",

@@ -14,7 +14,7 @@ export function generateSecret(): string {
 export async function generateQRCode(
   email: string,
   secret: string,
-  issuer: string = 'KTree CMS'
+  issuer: string = 'Atidi NRI Care'
 ): Promise<string> {
   const otpauth = generateURI({
     secret,

@@ -5,7 +5,15 @@
  * empty/malformed content so callers can drop the wrapper element.
  */
 const RichText = ({ content }) => {
-  if (!content || !content.root) {
+  if (!content) {
+    return null
+  }
+
+  if (typeof content === 'string') {
+    return <>{content}</>
+  }
+
+  if (!content.root) {
     return null
   }
 

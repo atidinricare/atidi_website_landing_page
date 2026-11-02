@@ -2,14 +2,6 @@
 import { motion } from 'framer-motion';
 import styles from './TrustBanner.module.css';
 
-const mediaLogos = [
-  { name: 'Times of India', className: 'timesOfIndia' },
-  { name: 'Entrepreneur', className: 'entrepreneur' },
-  { name: 'The Economic Times', className: 'economicTimes' },
-  { name: 'Business Standard', className: 'businessStandard' },
-  { name: 'YourStory', className: 'yourStory' },
-];
-
 // Custom SVG Line Icons
 const HospitalIcon = () => (
   <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -53,7 +45,36 @@ const RecordsIcon = () => (
   </svg>
 );
 
-const trustItems = [
+const ICON_MAP = {
+  hospital: HospitalIcon,
+  savings: SavingsIcon,
+  support: SupportIcon,
+  records: RecordsIcon,
+  HospitalIcon,
+  SavingsIcon,
+  SupportIcon,
+  RecordsIcon,
+};
+
+const CLASS_MAP = {
+  'times of india': 'timesOfIndia',
+  'entrepreneur': 'entrepreneur',
+  'the economic times': 'economicTimes',
+  'economic times': 'economicTimes',
+  'business standard': 'businessStandard',
+  'yourstory': 'yourStory',
+  'forbes': 'forbes',
+};
+
+const DEFAULT_MEDIA_LOGOS = [
+  { name: 'Times of India', className: 'timesOfIndia' },
+  { name: 'Entrepreneur', className: 'entrepreneur' },
+  { name: 'The Economic Times', className: 'economicTimes' },
+  { name: 'Business Standard', className: 'businessStandard' },
+  { name: 'YourStory', className: 'yourStory' },
+];
+
+const DEFAULT_TRUST_ITEMS = [
   {
     Icon: HospitalIcon,
     number: '121',
@@ -112,7 +133,42 @@ const logoVariants = {
   },
 };
 
-const TrustBanner = () => {
+const TrustBanner = ({ data }) => {
+  // Map dynamic metrics or use defaults
+  const trustItems = data?.items && data.items.length > 0
+    ? data.items.map((it) => {
+        const rawIcon = it.icon || 'hospital';
+        const IconComp = ICON_MAP[rawIcon] || HospitalIcon;
+        return {
+          Icon: IconComp,
+          number: it.number,
+          title: it.title,
+          subtitle: it.subtitle,
+        };
+      })
+    : DEFAULT_TRUST_ITEMS;
+
+  const mediaHeading = data?.mediaHeading || 'As Featured In';
+
+  // Map dynamic media logos or use defaults
+  const mediaLogos = data?.mediaLogos && data.mediaLogos.length > 0
+    ? data.mediaLogos.map((m) => {
+        const cleanName = (m.name || '').toLowerCase().trim();
+        const className = CLASS_MAP[cleanName] || '';
+        let imageUrl = '';
+        if (typeof m.image === 'object' && m.image !== null && m.image.url) {
+          imageUrl = m.image.url;
+        } else if (typeof m.image === 'string') {
+          imageUrl = m.image;
+        }
+        return {
+          name: m.name,
+          className,
+          imageUrl,
+        };
+      })
+    : DEFAULT_MEDIA_LOGOS;
+
   return (
     <section className={styles.section}>
       <motion.div
@@ -143,16 +199,24 @@ const TrustBanner = () => {
 
         {/* Media Logos */}
         <motion.span className={styles.mediaHeading} variants={itemVariants}>
-          As Featured In
+          {mediaHeading}
         </motion.span>
         <div className={styles.mediaLogos}>
           {mediaLogos.map((logo, index) => (
             <motion.div
-              key={logo.name}
-              className={`${styles.logo} ${styles[logo.className]}`}
+              key={logo.name || index}
+              className={`${styles.logo} ${logo.className ? styles[logo.className] : ''}`}
               variants={logoVariants}
             >
-              {logo.name}
+              {logo.imageUrl ? (
+                <img
+                  src={logo.imageUrl}
+                  alt={logo.name || 'Featured publication'}
+                  style={{ maxHeight: '28px', width: 'auto', objectFit: 'contain' }}
+                />
+              ) : (
+                logo.name
+              )}
             </motion.div>
           ))}
         </div>

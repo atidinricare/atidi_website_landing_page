@@ -7,7 +7,7 @@ import styles from './Treatments.module.css';
 const INITIAL_COUNT = 20;
 const LOAD_MORE_COUNT = 4;
 
-const Treatments = ({ treatments, onSelectTreatment }) => {
+const Treatments = ({ treatments, treatmentsHeader, onSelectTreatment }) => {
   const [visibleCount, setVisibleCount] = useState(INITIAL_COUNT);
 
   const visibleTreatments = treatments.slice(0, visibleCount);
@@ -16,6 +16,74 @@ const Treatments = ({ treatments, onSelectTreatment }) => {
 
   const handleLoadMore = () => {
     setVisibleCount(prev => Math.min(prev + LOAD_MORE_COUNT, treatments.length));
+  };
+
+  const labelText = treatmentsHeader?.eyebrow || 'Treatments';
+  const headingText = treatmentsHeader?.heading;
+  const subtitleText =
+    treatmentsHeader?.subheading ||
+    'Click on treatment to see full details and procedure information';
+
+  const formatLineHtml = (text) => {
+    // 1. Replace *word* with <em>word</em>
+    let html = text.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+    // If "fraction" exists without asterisks, highlight it
+    if (!html.includes('<em>')) {
+      html = html.replace(/\bfraction\b/gi, '<em>$&</em>');
+    }
+    // 2. Wrap commas with styled comma
+    html = html.replace(/,/g, `<span class="${styles.comma}">,</span>`);
+    // 3. Wrap trailing period with styled dot
+    html = html.replace(/\.$/, `<span class="${styles.dot}">.</span>`);
+    return html;
+  };
+
+  const renderTitle = () => {
+    let lines = [];
+    if (headingText && headingText.trim()) {
+      const raw = headingText.trim();
+      if (raw.includes('\n')) {
+        lines = raw.split('\n').map((l) => l.trim()).filter(Boolean);
+      } else if (raw.toLowerCase().includes('procedures') && raw.toLowerCase().includes('cost')) {
+        // Smart split if provided on a single line without newlines
+        lines = [
+          'World-class',
+          'procedures,',
+          '*fraction* of the',
+          'cost.',
+        ];
+      } else {
+        lines = [raw];
+      }
+    } else {
+      lines = [
+        'World-class',
+        'procedures,',
+        '*fraction* of the',
+        'cost.',
+      ];
+    }
+
+    return (
+      <>
+        {lines.map((line, idx) => {
+          let cls = styles.titleLine1;
+          if (idx === 1) cls = styles.titleLine2;
+          else if (idx === 2) cls = styles.titleLine3;
+          else if (idx >= 3) cls = styles.titleLine4;
+
+          return (
+            <span
+              key={idx}
+              className={cls}
+              dangerouslySetInnerHTML={{
+                __html: formatLineHtml(line),
+              }}
+            />
+          );
+        })}
+      </>
+    );
   };
 
   return (
@@ -34,7 +102,7 @@ const Treatments = ({ treatments, onSelectTreatment }) => {
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
             >
-              Treatments
+              {labelText}
             </motion.span>
             <motion.h2
               className={styles.title}
@@ -43,11 +111,7 @@ const Treatments = ({ treatments, onSelectTreatment }) => {
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.1 }}
             >
-              <span className={styles.titleLine1}>World-class</span>
-              <span className={styles.titleLine2}>procedures<span className={styles.comma}>,</span></span>
-              <span className={styles.titleLine3}>
-                <em>fraction</em> of the cost<span className={styles.dot}>.</span>
-              </span>
+              {renderTitle()}
             </motion.h2>
           </div>
 
@@ -59,7 +123,7 @@ const Treatments = ({ treatments, onSelectTreatment }) => {
             transition={{ duration: 0.6, delay: 0.2 }}
           >
             <p className={styles.subtitle}>
-              Click on treatment to see full details and procedure information
+              {subtitleText}
             </p>
 {/* View all link hidden temporarily
             <a href="#" className={styles.viewAllLink}>

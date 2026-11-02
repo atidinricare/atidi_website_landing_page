@@ -178,8 +178,12 @@ function readStorageConfigFromFile(): StorageConfig | null {
  *      when you don't want to hit the DB.
  *   3. Defaults — S3 disabled, CDN none.
  */
+let cachedConfig: StorageConfig | null = null
+
 export function readStorageConfig(): StorageConfig {
-  return readStorageConfigFromDb() ?? readStorageConfigFromFile() ?? defaults
+  if (cachedConfig) return cachedConfig
+  cachedConfig = readStorageConfigFromFile() ?? readStorageConfigFromDb() ?? defaults
+  return cachedConfig
 }
 
 export function writeStorageConfig(config: StorageConfig): void {

@@ -1,145 +1,223 @@
 'use client'
 
-import { motion } from 'framer-motion';
-import Link from 'next/link';
-import { Shield, Eye, Lock, Database, UserCheck, Bell, Globe, Mail } from 'lucide-react';
-import styles from './LegalPages.module.css';
+import { motion } from 'framer-motion'
+import Link from 'next/link'
+import {
+  Shield,
+  Eye,
+  Lock,
+  Database,
+  UserCheck,
+  Bell,
+  Globe,
+  Mail,
+  FileText,
+  Settings,
+  Share2,
+  User,
+  RefreshCw,
+} from 'lucide-react'
+import RichText from './RichText'
+import styles from './LegalPages.module.css'
 
-const PrivacyPolicyClient = () => {
-  const sections = [
-    {
-      id: 'information-collection',
-      icon: Database,
-      title: 'Information We Collect',
-      content: [
-        {
-          subtitle: 'Personal Information',
-          text: 'When you use our services, we may collect personal information that you voluntarily provide, including your name, email address, phone number, postal address, date of birth, and medical/dental history relevant to your treatment.'
-        },
-        {
-          subtitle: 'Health Information',
-          text: 'To provide dental care services, we collect health-related information including dental records, X-rays, treatment plans, medical history, allergies, and current medications. This information is essential for delivering safe and effective dental care.'
-        },
-        {
-          subtitle: 'Usage Data',
-          text: 'We automatically collect certain information when you visit our website, including your IP address, browser type, device information, pages visited, time spent on pages, and referring URLs.'
-        }
-      ]
-    },
-    {
-      id: 'information-use',
-      icon: Eye,
-      title: 'How We Use Your Information',
-      content: [
-        {
-          subtitle: 'Service Delivery',
-          text: 'We use your information to provide, maintain, and improve our dental care coordination services, including scheduling appointments, coordinating between treatment centers in India and follow-up care in the USA, and managing your patient records.'
-        },
-        {
-          subtitle: 'Communication',
-          text: 'We use your contact information to send appointment reminders, treatment updates, post-care instructions, and respond to your inquiries. With your consent, we may also send promotional communications about our services.'
-        },
-        {
-          subtitle: 'Quality Improvement',
-          text: 'We analyze usage patterns and feedback to improve our services, develop new features, and enhance user experience across our platforms.'
-        }
-      ]
-    },
-    {
-      id: 'information-sharing',
-      icon: UserCheck,
-      title: 'Information Sharing',
-      content: [
-        {
-          subtitle: 'Healthcare Providers',
-          text: 'We share your health information with our partner dental clinics in India and the USA as necessary to coordinate your care. This sharing is essential for treatment continuity and is conducted in compliance with applicable healthcare privacy regulations.'
-        },
-        {
-          subtitle: 'Service Providers',
-          text: 'We may share information with trusted third-party service providers who assist us in operating our website, conducting our business, or servicing you. These parties are contractually obligated to keep your information confidential.'
-        },
-        {
-          subtitle: 'Legal Requirements',
-          text: 'We may disclose your information when required by law, court order, or government regulation, or when we believe disclosure is necessary to protect our rights, your safety, or the safety of others.'
-        }
-      ]
-    },
-    {
-      id: 'data-security',
-      icon: Lock,
-      title: 'Data Security',
-      content: [
-        {
-          subtitle: 'Protection Measures',
-          text: 'We implement industry-standard security measures including encryption, secure servers, firewalls, and access controls to protect your personal and health information from unauthorized access, alteration, disclosure, or destruction.'
-        },
-        {
-          subtitle: 'Data Storage',
-          text: 'Your data is stored on secure servers with appropriate physical, technical, and administrative safeguards. We retain your information only for as long as necessary to fulfill the purposes outlined in this policy or as required by law.'
-        }
-      ]
-    },
-    {
-      id: 'your-rights',
-      icon: Shield,
-      title: 'Your Rights',
-      content: [
-        {
-          subtitle: 'Access and Correction',
-          text: 'You have the right to access, review, and request corrections to your personal information. You may also request a copy of your health records in accordance with applicable healthcare regulations.'
-        },
-        {
-          subtitle: 'Opt-Out',
-          text: 'You may opt out of receiving promotional communications from us at any time by following the unsubscribe instructions in our emails or contacting us directly. Note that you cannot opt out of service-related communications necessary for your care.'
-        },
-        {
-          subtitle: 'Data Deletion',
-          text: 'Subject to legal and regulatory requirements, you may request the deletion of your personal information. Certain health records may need to be retained as required by healthcare regulations.'
-        }
-      ]
-    },
-    {
-      id: 'international-transfers',
-      icon: Globe,
-      title: 'International Data Transfers',
-      content: [
-        {
-          subtitle: 'Cross-Border Transfers',
-          text: 'As we coordinate care between India and the USA, your information may be transferred and stored in different countries. We ensure appropriate safeguards are in place to protect your information in compliance with applicable data protection laws.'
-        },
-        {
-          subtitle: 'Consent',
-          text: 'By using our services, you consent to the transfer of your information to India, the United States, and other countries where our partners and service providers are located.'
-        }
-      ]
-    },
-    {
-      id: 'updates',
-      icon: Bell,
-      title: 'Policy Updates',
-      content: [
-        {
-          subtitle: 'Changes to This Policy',
-          text: 'We may update this Privacy Policy from time to time to reflect changes in our practices or applicable laws. We will notify you of any material changes by posting the updated policy on our website and updating the "Last Updated" date.'
-        },
-        {
-          subtitle: 'Your Continued Use',
-          text: 'Your continued use of our services after any changes to this Privacy Policy constitutes your acceptance of the updated policy.'
-        }
-      ]
-    },
-    {
-      id: 'contact',
-      icon: Mail,
-      title: 'Contact Us',
-      content: [
-        {
-          subtitle: 'Questions or Concerns',
-          text: 'If you have any questions about this Privacy Policy or our data practices, please contact us at privacy@atidinricare.com or call us at +91 90309 91859. You may also write to us at our registered address.'
-        }
-      ]
-    }
-  ];
+const ICON_MAP = {
+  Database,
+  Eye,
+  Lock,
+  Shield,
+  UserCheck,
+  Bell,
+  Globe,
+  Mail,
+  FileText,
+  Settings,
+  Share2,
+  User,
+  RefreshCw,
+}
+
+const DEFAULT_SECTIONS = [
+  {
+    id: 'information-collection',
+    icon: Database,
+    title: 'Information We Collect',
+    content: [
+      {
+        subtitle: 'Personal Information',
+        text: 'When you use our services, we may collect personal information that you voluntarily provide, including your name, email address, phone number, postal address, date of birth, and medical/dental history relevant to your treatment.',
+      },
+      {
+        subtitle: 'Health Information',
+        text: 'To provide dental care services, we collect health-related information including dental records, X-rays, treatment plans, medical history, allergies, and current medications. This information is essential for delivering safe and effective dental care.',
+      },
+      {
+        subtitle: 'Usage Data',
+        text: 'We automatically collect certain information when you visit our website, including your IP address, browser type, device information, pages visited, time spent on pages, and referring URLs.',
+      },
+    ],
+  },
+  {
+    id: 'information-use',
+    icon: Eye,
+    title: 'How We Use Your Information',
+    content: [
+      {
+        subtitle: 'Service Delivery',
+        text: 'We use your information to provide, maintain, and improve our dental care coordination services, including scheduling appointments, coordinating between treatment centers in India and follow-up care in the USA, and managing your patient records.',
+      },
+      {
+        subtitle: 'Communication',
+        text: 'We use your contact information to send appointment reminders, treatment updates, post-care instructions, and respond to your inquiries. With your consent, we may also send promotional communications about our services.',
+      },
+      {
+        subtitle: 'Quality Improvement',
+        text: 'We analyze usage patterns and feedback to improve our services, develop new features, and enhance user experience across our platforms.',
+      },
+    ],
+  },
+  {
+    id: 'information-sharing',
+    icon: UserCheck,
+    title: 'Information Sharing',
+    content: [
+      {
+        subtitle: 'Healthcare Providers',
+        text: 'We share your health information with our partner dental clinics in India and the USA as necessary to coordinate your care. This sharing is essential for treatment continuity and is conducted in compliance with applicable healthcare privacy regulations.',
+      },
+      {
+        subtitle: 'Service Providers',
+        text: 'We may share information with trusted third-party service providers who assist us in operating our website, conducting our business, or servicing you. These parties are contractually obligated to keep your information confidential.',
+      },
+      {
+        subtitle: 'Legal Requirements',
+        text: 'We may disclose your information when required by law, court order, or government regulation, or when we believe disclosure is necessary to protect our rights, your safety, or the safety of others.',
+      },
+    ],
+  },
+  {
+    id: 'data-security',
+    icon: Lock,
+    title: 'Data Security',
+    content: [
+      {
+        subtitle: 'Protection Measures',
+        text: 'We implement industry-standard security measures including encryption, secure servers, firewalls, and access controls to protect your personal and health information from unauthorized access, alteration, disclosure, or destruction.',
+      },
+      {
+        subtitle: 'Data Storage',
+        text: 'Your data is stored on secure servers with appropriate physical, technical, and administrative safeguards. We retain your information only for as long as necessary to fulfill the purposes outlined in this policy or as required by law.',
+      },
+    ],
+  },
+  {
+    id: 'your-rights',
+    icon: Shield,
+    title: 'Your Rights',
+    content: [
+      {
+        subtitle: 'Access and Correction',
+        text: 'You have the right to access, review, and request corrections to your personal information. You may also request a copy of your health records in accordance with applicable healthcare regulations.',
+      },
+      {
+        subtitle: 'Opt-Out',
+        text: 'You may opt out of receiving promotional communications from us at any time by following the unsubscribe instructions in our emails or contacting us directly. Note that you cannot opt out of service-related communications necessary for your care.',
+      },
+      {
+        subtitle: 'Data Deletion',
+        text: 'Subject to legal and regulatory requirements, you may request the deletion of your personal information. Certain health records may need to be retained as required by healthcare regulations.',
+      },
+    ],
+  },
+  {
+    id: 'international-transfers',
+    icon: Globe,
+    title: 'International Data Transfers',
+    content: [
+      {
+        subtitle: 'Cross-Border Transfers',
+        text: 'As we coordinate care between India and the USA, your information may be transferred and stored in different countries. We ensure appropriate safeguards are in place to protect your information in compliance with applicable data protection laws.',
+      },
+      {
+        subtitle: 'Consent',
+        text: 'By using our services, you consent to the transfer of your information to India, the United States, and other countries where our partners and service providers are located.',
+      },
+    ],
+  },
+  {
+    id: 'updates',
+    icon: Bell,
+    title: 'Policy Updates',
+    content: [
+      {
+        subtitle: 'Changes to This Policy',
+        text: 'We may update this Privacy Policy from time to time to reflect changes in our practices or applicable laws. We will notify you of any material changes by posting the updated policy on our website and updating the "Last Updated" date.',
+      },
+      {
+        subtitle: 'Your Continued Use',
+        text: 'Your continued use of our services after any changes to this Privacy Policy constitutes your acceptance of the updated policy.',
+      },
+    ],
+  },
+  {
+    id: 'contact',
+    icon: Mail,
+    title: 'Contact Us',
+    content: [
+      {
+        subtitle: 'Questions or Concerns',
+        text: 'If you have any questions about this Privacy Policy or our data practices, please contact us at privacy@atidinricare.com or call us at +91 90309 91859. You may also write to us at our registered address.',
+      },
+    ],
+  },
+]
+
+/**
+ * @param {{ data?: any }} props
+ */
+const PrivacyPolicyClient = ({ data }) => {
+  const eyebrow = data?.hero?.eyebrow || 'Legal'
+  const rawHeadline = data?.hero?.headline || 'Privacy Policy.'
+  const subheadline =
+    data?.hero?.subheadline ||
+    'Your privacy matters to us. This policy explains how we collect, use, and protect your personal information.'
+
+  // Split headline for styling
+  const cleanHeadline = rawHeadline.replace(/\.+$/, '')
+  const words = cleanHeadline.split(' ')
+  const titleLine1 = words[0] || 'Privacy'
+  const titleLine2 = words.slice(1).join(' ') || 'Policy'
+
+  const sections =
+    data?.sections && data.sections.length > 0
+      ? data.sections.map((sec, idx) => {
+          const rawIcon = sec.icon
+          const IconComp =
+            typeof rawIcon === 'string'
+              ? ICON_MAP[rawIcon] || Shield
+              : rawIcon || Shield
+
+          const slugId = sec.title
+            ? sec.title
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/(^-|-$)/g, '')
+            : `section-${idx + 1}`
+
+          const items = Array.isArray(sec.items)
+            ? sec.items.map((item) => ({
+                subtitle: item.heading,
+                content: item.content,
+              }))
+            : []
+
+          return {
+            id: slugId,
+            icon: IconComp,
+            title: sec.title,
+            content: items,
+          }
+        })
+      : DEFAULT_SECTIONS
 
   return (
     <div className={styles.legalPage}>
@@ -156,7 +234,7 @@ const PrivacyPolicyClient = () => {
             transition={{ duration: 0.5 }}
           >
             <Shield size={16} />
-            <span>Legal</span>
+            <span>{eyebrow}</span>
           </motion.div>
 
           <motion.h1
@@ -165,8 +243,11 @@ const PrivacyPolicyClient = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
           >
-            <span className={styles.titleLine1}>Privacy</span>
-            <span className={styles.titleLine2}>Policy<span className={styles.dot}>.</span></span>
+            <span className={styles.titleLine1}>{titleLine1}</span>
+            <span className={styles.titleLine2}>
+              {titleLine2}
+              <span className={styles.dot}>.</span>
+            </span>
           </motion.h1>
 
           <motion.p
@@ -175,7 +256,7 @@ const PrivacyPolicyClient = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            Your privacy matters to us. This policy explains how we collect, use, and protect your personal information.
+            {subheadline}
           </motion.p>
 
           <motion.div
@@ -227,7 +308,7 @@ const PrivacyPolicyClient = () => {
               className={styles.contentBlock}
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
+              viewport={{ once: true, margin: '-100px' }}
               transition={{ duration: 0.6, delay: index * 0.05 }}
             >
               <div className={styles.sectionHeader}>
@@ -244,12 +325,20 @@ const PrivacyPolicyClient = () => {
                 {section.content.map((item, i) => (
                   <div key={i} className={styles.contentItem}>
                     <h3 className={styles.contentSubtitle}>{item.subtitle}</h3>
-                    <p className={styles.contentText}>{item.text}</p>
+                    <div className={styles.contentText}>
+                      {item.content ? (
+                        <RichText content={item.content} />
+                      ) : (
+                        <p>{item.text}</p>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
 
-              {index < sections.length - 1 && <div className={styles.sectionDivider} />}
+              {index < sections.length - 1 && (
+                <div className={styles.sectionDivider} />
+              )}
             </motion.article>
           ))}
         </div>
@@ -271,7 +360,10 @@ const PrivacyPolicyClient = () => {
               </p>
             </div>
             <div className={styles.ctaActions}>
-              <a href="mailto:privacy@atidinricare.com" className={styles.ctaButton}>
+              <a
+                href="mailto:privacy@atidinricare.com"
+                className={styles.ctaButton}
+              >
                 Contact Privacy Team
               </a>
               <Link href="/terms-of-service" className={styles.ctaLink}>
@@ -282,7 +374,7 @@ const PrivacyPolicyClient = () => {
         </div>
       </section>
     </div>
-  );
-};
+  )
+}
 
-export default PrivacyPolicyClient;
+export default PrivacyPolicyClient

@@ -358,12 +358,14 @@ async function seed() {
             collection: 'clinics',
             data: {
               name: clinic.name,
+              city: location.city,
               address: clinic.address,
               phone: clinic.phone,
               specialties: clinic.specialties.map((s) => ({ specialty: s })),
               rating: clinic.rating,
               reviewCount: clinic.reviewCount,
               location: createdLocation.id,
+              status: 'published',
             },
           })
           clinicCount++

@@ -20,8 +20,8 @@ const LocationPageClient = ({ location }) => {
             <p className={styles.notFoundText}>
               The location you're looking for doesn't exist or has been removed.
             </p>
-            <Link href="/clinics" className={styles.notFoundLink}>
-              <ArrowLeft size={18} /> Back to Clinics
+            <Link href="/#locations" className={styles.notFoundLink}>
+              <ArrowLeft size={18} /> Back to Locations
             </Link>
           </motion.div>
         </div>
@@ -32,8 +32,8 @@ const LocationPageClient = ({ location }) => {
   return (
     <div className={styles.page}>
       <div className={styles.backNav}>
-        <Link href="/clinics" className={styles.backLink}>
-          <ArrowLeft size={18} /> Back to Clinics
+        <Link href="/#locations" className={styles.backLink}>
+          <ArrowLeft size={18} /> Back to Locations
         </Link>
       </div>
       <div className={styles.detailWrapper}>

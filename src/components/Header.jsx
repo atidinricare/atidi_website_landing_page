@@ -6,6 +6,8 @@ import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X, Calendar } from 'lucide-react'
 
+import SmartLink from './SmartLink'
+
 const Header = ({ navigation }) => {
   const [isScrolled, setIsScrolled] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -13,13 +15,40 @@ const Header = ({ navigation }) => {
   const isHomePage = pathname === '/'
 
   // Navigation data with fallbacks
-  const navItems = navigation?.mainNav || [
+  const defaultNavItems = [
     { label: 'Treatments', link: '#treatments', type: 'custom' },
     { label: 'Locations', link: '#locations', type: 'custom' },
     { label: 'Process', link: '#process', type: 'custom' },
     { label: 'FAQ', link: '#faq', type: 'custom' },
+    { label: 'Clinics', link: '/clinics', type: 'page' },
     { label: 'Sign In', link: 'https://app.atidinricare.com/', type: 'custom' },
   ]
+
+  const baseNavItems =
+    navigation?.mainNav && navigation.mainNav.length > 0
+      ? navigation.mainNav
+      : defaultNavItems
+
+  // Ensure "Process" is always present in the navbar between Locations and FAQ
+  const hasProcess = baseNavItems.some(
+    (item) => item.label?.toLowerCase() === 'process' || item.link?.includes('#process')
+  )
+
+  let navItems = baseNavItems
+  if (!hasProcess) {
+    const locIndex = navItems.findIndex(
+      (item) => item.label?.toLowerCase() === 'locations' || item.link?.includes('#locations')
+    )
+    if (locIndex !== -1) {
+      navItems = [
+        ...navItems.slice(0, locIndex + 1),
+        { label: 'Process', link: '#process', type: 'custom' },
+        ...navItems.slice(locIndex + 1),
+      ]
+    } else {
+      navItems = [{ label: 'Process', link: '#process', type: 'custom' }, ...navItems]
+    }
+  }
   const ctaButton = navigation?.ctaButton || {
     label: 'Book an Appointment',
     link: 'https://app.atidinricare.com/',
@@ -49,43 +78,10 @@ const Header = ({ navigation }) => {
 
   // Helper to render nav link
   const renderNavLink = (item, onClick = null) => {
-    const link = item.link || '#'
-    const isHash = link.startsWith('#')
-    const external = isExternal(link)
-
-    if (external) {
-      return (
-        <a
-          href={link}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={onClick}
-        >
-          {item.label}
-        </a>
-      )
-    }
-
-    if (isHash && isHomePage) {
-      return (
-        <a href={link} onClick={onClick}>
-          {item.label}
-        </a>
-      )
-    }
-
-    if (isHash && !isHomePage) {
-      return (
-        <Link href={`/${link}`} onClick={onClick}>
-          {item.label}
-        </Link>
-      )
-    }
-
     return (
-      <Link href={link} onClick={onClick}>
+      <SmartLink href={item.link} onClick={onClick}>
         {item.label}
-      </Link>
+      </SmartLink>
     )
   }
 

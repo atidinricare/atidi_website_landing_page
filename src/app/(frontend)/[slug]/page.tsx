@@ -5,11 +5,12 @@ import {
   getTreatments,
   getLocations,
   getFAQs,
+  getClinics,
 } from '@/lib/data'
 import PageBlocks from '@/components/PageBlocks'
 import JsonLd from '@/components/JsonLd'
 
-export const revalidate = false
+export const dynamic = 'force-dynamic'
 
 // A slug with no published page 404s rather than rendering an empty shell.
 export const dynamicParams = true
@@ -43,14 +44,14 @@ export async function generateMetadata({ params }: PageProps) {
   }
 }
 
-export async function generateStaticParams() {
+/* export async function generateStaticParams() {
   try {
     const slugs = await getPageSlugs()
     return slugs.map((slug: string) => ({ slug }))
   } catch {
     return []
   }
-}
+} */
 
 export default async function CmsPage({ params }: PageProps) {
   const { slug } = await params
@@ -63,11 +64,14 @@ export default async function CmsPage({ params }: PageProps) {
   const layout = ((page as any).layout || []) as any[]
   const blockTypes = new Set(layout.map((block) => block.blockType))
 
+  const isClinicsPage = slug === 'clinics' || slug === 'our-clinics'
+
   // Only pay for the collections this page's blocks actually reference.
-  const [treatments, locations, faqs] = await Promise.all([
+  const [treatments, locations, faqs, clinics] = await Promise.all([
     blockTypes.has('treatmentsBlock') ? getTreatments() : Promise.resolve(null),
-    blockTypes.has('locationsBlock') ? getLocations() : Promise.resolve(null),
+    blockTypes.has('locationsBlock') && !isClinicsPage ? getLocations() : Promise.resolve(null),
     blockTypes.has('faqBlock') ? getFAQs() : Promise.resolve(null),
+    isClinicsPage || blockTypes.has('clinicsBlock') ? getClinics() : Promise.resolve(null),
   ])
 
   return (
@@ -78,7 +82,10 @@ export default async function CmsPage({ params }: PageProps) {
         treatments={treatments?.all ?? []}
         locations={locations?.all ?? []}
         faqs={faqs ?? []}
+        clinics={clinics ?? []}
+        isClinicsPage={isClinicsPage}
       />
     </main>
   )
 }
+

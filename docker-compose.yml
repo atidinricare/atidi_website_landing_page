@@ -17,7 +17,7 @@ services:
       # - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
       # - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
       # Site URL
-      - SITE_URL=${SITE_URL:-https://athidi-payload-node-dev.ktree.org}
+      - SITE_URL=${SITE_URL:-https://dev1.atidinricare.com}
     restart: unless-stopped
     depends_on:
       - postgres
@@ -32,8 +32,8 @@ services:
       - "5432:5432"
     environment:
       POSTGRES_USER: atidi
-      POSTGRES_PASSWORD: atidi_secret
-      POSTGRES_DB: atidi_cms
+      POSTGRES_PASSWORD: atidi_dev
+      POSTGRES_DB: atidi_dev
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped

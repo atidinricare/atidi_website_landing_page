@@ -3,9 +3,14 @@ import React from 'react'
 const Icon = () => {
   return (
     <img
-      src="/athidi.png"
+      src="/admin-icon.png"
       alt="Atidi"
-      style={{ height: '24px', width: 'auto' }}
+      style={{
+        height: '36px',
+        width: '36px',
+        objectFit: 'contain',
+        display: 'block',
+      }}
     />
   )
 }

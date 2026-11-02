@@ -5,8 +5,8 @@ import { Calendar, ArrowRight } from 'lucide-react';
 import { getImageUrl } from '@/lib/image-url';
 import styles from './JourneyCTA.module.css';
 
-// App screens to display
-const appScreens = [
+// Default fallback app screens to display if CMS has not yet configured any
+const defaultAppScreens = [
   {
     id: 1,
     image: '/appimage4.jpeg',
@@ -29,20 +29,75 @@ const appScreens = [
   },
 ];
 
-const JourneyCTA = ({ assetBaseUrl } = {}) => {
+const JourneyCTA = ({ ctaBlock, assetBaseUrl } = {}) => {
+  const screens = (ctaBlock?.screens && ctaBlock.screens.length > 0)
+    ? ctaBlock.screens
+    : defaultAppScreens;
+
+  const label = ctaBlock?.eyebrow || 'Start Your Journey';
+  const title = ctaBlock?.heading || 'Ready to start your dental journey?';
+  const description =
+    ctaBlock?.subheading ||
+    'Book a free teleconsultation with our dental experts and get a personalized treatment plan.';
+
+  const ctaButton = {
+    label: ctaBlock?.button?.label || 'Book an Appointment',
+    link: ctaBlock?.button?.link || 'https://app.atidinricare.com/',
+  };
+
   const [activeScreen, setActiveScreen] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
 
   // Auto-rotate screens
   useEffect(() => {
-    if (isPaused) return;
+    if (isPaused || screens.length <= 1) return;
 
     const interval = setInterval(() => {
-      setActiveScreen((prev) => (prev + 1) % appScreens.length);
+      setActiveScreen((prev) => (prev + 1) % screens.length);
     }, 3500);
 
     return () => clearInterval(interval);
-  }, [isPaused]);
+  }, [isPaused, screens.length]);
+
+  const resolveImage = (imgSrc) => {
+    if (!imgSrc) return '/appimage4.jpeg';
+    if (
+      imgSrc.startsWith('http://') ||
+      imgSrc.startsWith('https://') ||
+      imgSrc.startsWith('/api/media')
+    ) {
+      return imgSrc;
+    }
+    return getImageUrl(imgSrc, assetBaseUrl);
+  };
+
+  const renderTitle = () => {
+    const formatted = title.includes('\n') ? (
+      title.split('\n').map((line, i, arr) => (
+        <span
+          key={i}
+          dangerouslySetInnerHTML={{
+            __html: line.replace(/\*([^*]+)\*/g, '<em>$1</em>'),
+          }}
+        />
+      ))
+    ) : (
+      <span
+        dangerouslySetInnerHTML={{
+          __html: title.replace(/\*([^*]+)\*/g, '<em>$1</em>'),
+        }}
+      />
+    );
+
+    const hasEndPunctuation = /[.?!]$/.test(title.trim());
+
+    return (
+      <>
+        {formatted}
+        {!hasEndPunctuation && <span className={styles.dot}>.</span>}
+      </>
+    );
+  };
 
   return (
     <section className={styles.section}>
@@ -60,7 +115,7 @@ const JourneyCTA = ({ assetBaseUrl } = {}) => {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            Mobile App
+            {label}
           </motion.span>
 
           <motion.h2
@@ -70,9 +125,7 @@ const JourneyCTA = ({ assetBaseUrl } = {}) => {
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.1 }}
           >
-            Your care,<br />
-            in your<br />
-            pocket<span className={styles.dot}>.</span>
+            {renderTitle()}
           </motion.h2>
 
           <motion.div
@@ -90,11 +143,11 @@ const JourneyCTA = ({ assetBaseUrl } = {}) => {
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.4 }}
           >
-            Track appointments, access records, find clinics — everything you need, one tap away.
+            {description}
           </motion.p>
 
           <motion.a
-            href="https://app.atidinricare.com/"
+            href={ctaButton.link || 'https://app.atidinricare.com/'}
             target="_blank"
             rel="noopener noreferrer"
             className={styles.ctaButton}
@@ -106,7 +159,7 @@ const JourneyCTA = ({ assetBaseUrl } = {}) => {
             whileTap={{ scale: 0.98 }}
           >
             <Calendar size={16} />
-            <span>Book an Appointment</span>
+            <span>{ctaButton.label || 'Book an Appointment'}</span>
             <ArrowRight size={14} className={styles.ctaArrow} />
           </motion.a>
         </div>
@@ -125,12 +178,16 @@ const JourneyCTA = ({ assetBaseUrl } = {}) => {
           <div className={styles.phoneFrame}>
             <div className={styles.phoneNotch} />
             <div className={styles.phoneScreen}>
-              {appScreens.map((screen, idx) => (
+              {screens.map((screen, idx) => (
                 <motion.img
-                  key={screen.id}
-                  src={getImageUrl(screen.image, assetBaseUrl)}
-                  alt={`App screen ${idx + 1}`}
-                  onError={(e) => { e.target.src = screen.image }}
+                  key={screen.id || idx}
+                  src={resolveImage(screen.image)}
+                  alt={screen.caption || `App screen ${idx + 1}`}
+                  onError={(e) => {
+                    if (e.target.src !== screen.image) {
+                      e.target.src = screen.image || '/appimage4.jpeg';
+                    }
+                  }}
                   className={styles.appImage}
                   initial={false}
                   animate={{
@@ -145,18 +202,22 @@ const JourneyCTA = ({ assetBaseUrl } = {}) => {
           </div>
 
           {/* Screen indicators */}
-          <div className={styles.indicators}>
-            {appScreens.map((screen, idx) => (
-              <button
-                key={screen.id}
-                className={`${styles.indicator} ${activeScreen === idx ? styles.active : ''}`}
-                onClick={() => setActiveScreen(idx)}
-                aria-label={`View screen ${idx + 1}`}
-              >
-                <span className={styles.indicatorNum}>{screen.label}</span>
-              </button>
-            ))}
-          </div>
+          {screens.length > 1 && (
+            <div className={styles.indicators}>
+              {screens.map((screen, idx) => (
+                <button
+                  key={screen.id || idx}
+                  className={`${styles.indicator} ${activeScreen === idx ? styles.active : ''}`}
+                  onClick={() => setActiveScreen(idx)}
+                  aria-label={`View screen ${idx + 1}`}
+                >
+                  <span className={styles.indicatorNum}>
+                    {screen.label || String(idx + 1).padStart(2, '0')}
+                  </span>
+                </button>
+              ))}
+            </div>
+          )}
 
           {/* Glow effect */}
           <div className={styles.phoneGlow} />
@@ -178,3 +239,4 @@ const JourneyCTA = ({ assetBaseUrl } = {}) => {
 };
 
 export default JourneyCTA;
+
